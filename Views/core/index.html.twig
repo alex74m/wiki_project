@@ -1,0 +1,17 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Index{% endblock %}
+
+{% block body %}
+
+{#dump(listArticles)#}
+
+
+    <h1>Articles</h1>
+		<ul>
+		    {% for article in listArticles %}
+		        <li>{{ article._sTitre }}</li>
+		        <li>{{ article._Id }}</li>
+		    {% endfor %}
+		</ul>
+{% endblock %}

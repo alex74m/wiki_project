@@ -1,0 +1,7 @@
+{
+    "name": "user/wiki_project",
+    "require": {
+        "twig/twig": "^2.4",
+        "twig/extensions": "^1.5"
+    }
+}
