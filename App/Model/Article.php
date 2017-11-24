@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Model\User;
+
 class Article {
 	// propriétés
 	protected $id;
@@ -20,7 +22,7 @@ class Article {
 	}
 
 	//hydratation
-	public function hydrate(array $aValeurs){
+	/*public function hydrate(array $aValeurs){
 		if(!empty($aValeurs)){
 			foreach ($aValeurs as $key => $valeur){
 				$methode = 'set_'.$key;
@@ -30,40 +32,42 @@ class Article {
 			}
 		}
 	}
+	*/
 	
 	//setters
-	public function set_Id(int $id){
+	public function set_Id($id){
+		$id = (int) $id;
 		$this->id = $id;
 	}
-	public function set_iAuteurId(int $idAuteur){
+	public function set_iAuteurId(User $idAuteur){
 	 $this->iAuteurId = $idAuteur;
 	}
 	
-	public function set_sTitre(string $sTitre){
+	public function set_sTitre($sTitre){
 	 $this->sTitre = $sTitre;
 	}
 	
-	public function set_sContenu(?string $sContenu){ // le ? uniquement en 7.1 php, veut dire nul ou string dans ce cas
+	public function set_sContenu($sContenu){
 	 $this->sContenu = $sContenu;
 	}
 	
-	public function set_dDateAjout(DateTime $dDateAjout){
+	public function set_dDateAjout($dDateAjout){
 	 $this->dDateAjout = $dDateAjout;
 	}
 	
-	public function set_dDateLastModif(DateTime $dDateLastModif){
+	public function set_dDateLastModif($dDateLastModif){
 	 $this->dDateLastModif = $dDateLastModif;
 	}
 	
-	public function set_bActif(bool $bActif){
+	public function set_bActif($bActif){
 	 $this->bActif = $bActif;
 	}
 	
-	public function set_sSlug(bool $sSlug){
+	public function set_sSlug($sSlug){
 	 $this->sSlug = $sSlug;
 	}
 	
-	public function set_aCategories(array $aCategories){
+	public function set_aCategories($aCategories){
 	 $this->aCategories = $aCategories;
 	}
 	
@@ -99,7 +103,7 @@ class Article {
 		return $this->sSlug;
 	}
 	
-	public function get_aCategories(): array{
+	public function get_aCategories(){
 		return $this->aCategories;
 	}
 	

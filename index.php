@@ -4,9 +4,16 @@ session_start();
 //-------------------
 use \App\Autoloader;
 
+// Appel des modèles
 use \App\Model\Article;
+use \App\Model\User;
+use \App\Model\Categorie;
+
+// Appel de la base de donnes
 use \App\Repository\Database\Database;
 use \App\Repository\DbRequest;
+
+// Appel des contrôleurs 
 use \App\Controller\ArticleController;
 
 
@@ -38,7 +45,7 @@ if (isset($_GET['page'])) {
 
 if ($page == 'home') {
 	$articleController = new ArticleController($dbRequest);
-	$listArticles = $articleController->indexAction("SELECT * FROM article");
+	$listArticles = $articleController->indexAction();
 //var_dump($listArticles);
 	$template = $twig->load('core/index.html.twig');
 	echo $template->render(array('listArticles' => $listArticles));
