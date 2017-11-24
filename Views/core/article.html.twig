@@ -1,0 +1,23 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}{{ article._sTitre }}{% endblock %}
+
+{% block body %}
+{% for item in article %}
+    {{dump(item)}}
+{% endfor %}
+    <div class="row">
+                <h2>{{ article._sTitre }}</h2> <cite>By {{ article._iAuteurId._sNom }}</cite>
+                <p> {{ article._sContenu }}</p>
+                <div class="tags">
+                    <h4>Tags <span class="glyphicon glyphicon-tag"></span></h4>
+                    {% for category in article._aCategories %}
+                        <span class="btn-info">
+                        <a href="#">{{ category._sNom }}</a>
+                        </span>
+                    {% endfor %}
+                </div>    
+        </div> 
+    </div>
+
+{% endblock %}

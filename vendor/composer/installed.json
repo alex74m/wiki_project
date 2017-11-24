@@ -20,7 +20,7 @@
         "suggest": {
             "ext-mbstring": "For best performance"
         },
-        "time": "2017-10-11T12:05:26+00:00",
+        "time": "2017-10-11 12:05:26",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -84,7 +84,7 @@
             "symfony/debug": "~2.7",
             "symfony/phpunit-bridge": "~3.3@dev"
         },
-        "time": "2017-09-27T18:10:31+00:00",
+        "time": "2017-09-27 18:10:31",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -153,7 +153,7 @@
         "suggest": {
             "symfony/translation": "Allow the time_diff output to be translated"
         },
-        "time": "2017-06-08T18:19:53+00:00",
+        "time": "2017-06-08 18:19:53",
         "type": "library",
         "extra": {
             "branch-alias": {

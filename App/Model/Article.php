@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Model\User;
+use App\Model\Categorie;
 
 class Article {
 	// propriétés
@@ -68,7 +69,10 @@ class Article {
 	}
 	
 	public function set_aCategories($aCategories){
-	 $this->aCategories = $aCategories;
+		if (is_array($aCategories))
+	 		$this->aCategories = $aCategories;
+	 	else
+	 		trigger_error("Error dev : Les catégories doivent être de type array", E_USER_ERROR);
 	}
 	
 

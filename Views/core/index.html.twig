@@ -1,33 +1,28 @@
 {% extends "layout.html.twig" %}
 {% set active = 'home' %}
-{% block title %}Index{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block body %}
+     <div class="container">
+    
+        {% for article in listArticles %}
 
-
-    {% for article in listArticles %}
-
-        <div class="container">
-        	<div class="span8">
-                <h1>{{ article._sTitre }}</h1> <cite>By {{ article._iAuteurId._sNom }}</cite>
+        	<div class="col-md-4">
+                <h2>{{ article._sTitre }}</h2> <cite>By {{ article._iAuteurId._sNom }}</cite>
                 <p> {{ article._sContenu }}</p>
                 <div>
-                    <div class="more label"><a href="#">Read more</a></div> 
+                    <div class="more label"><a href="article/{{article._sSlug}}">En savoir +</a></div> 
                     <div class="tags">
-                        <span class="btn-info">
-                            <a href="#">energy</a>
-                        </span>
-                        <span class="btn-info">
-                            <a href="#">reality</a>
-                        </span>
-                        <span class="btn-info">
-                            <a href="#">world</a>
-                        </span>
+                    <h4>Tags <span class="glyphicon glyphicon-tag"></span></h4>
+            {% for category in article._aCategories %}
+                <span class="btn-info">
+                    <a href="#">{{ category._sNom }}</a>
+                </span>
+            {% endfor %}
                     </div>    
                 </div> 
             </div>
-        </div>
-    {% endfor %}
-
+        {% endfor %}
+    </div>
 		
 {% endblock %}

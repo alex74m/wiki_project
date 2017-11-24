@@ -42,14 +42,54 @@ if (isset($_GET['page'])) {
 }else{
 	$page = 'home';
 }
+if (isset($_GET['slug'])) {
+	$slug = htmlentities($_GET['slug']);
+}else{
+	$slug = null;
+}
+
 
 if ($page == 'home') {
+
 	$articleController = new ArticleController($dbRequest);
 	$listArticles = $articleController->indexAction();
-//var_dump($listArticles);
 	$template = $twig->load('core/index.html.twig');
 	echo $template->render(array('listArticles' => $listArticles));
-}else{
+}
+elseif ($page == 'login') {
+	if (isset($_POST)) {
+		$_SESSION['user']['bAdmin'] = 1;
+	}
+	$template = $twig->load('core/login.html.twig');
+	echo $template->render(array('foo'=>'bar'));		
+}
+elseif ($page == 'admin') {
+
+	if (isset($_SESSION) & $_SESSION['user']['bAdmin'] == 1) {
+		$template = $twig->load('admin/manager.html.twig');
+		echo $template->render(array('foo'=>'ok'));
+	}else{
+		$template = $twig->load('core/login.html.twig');
+		echo $template->render(array('foo'=>'bar'));	
+	}
+
+}
+elseif ($page == 'article' & $slug != null) {
+
+	$articleController = new ArticleController($dbRequest);
+	$article = $articleController->articleAction($slug);
+
+	$template = $twig->load('core/article.html.twig');
+	echo $template->render(array('article' => $article));
+
+}
+elseif ($page == 'logout') {
+	setcookie(session_name(), 'vide', time() - 25*3600);
+	session_destroy();
+	$_SESSION = array();
+	header('Location: home');
+}
+else{
 	$template = $twig->load('error/error404.html.twig');
 	echo $template->render();
 }

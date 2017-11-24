@@ -6,6 +6,7 @@ namespace App\Controller;
 use \App\Repository\DbRequest;
 use \App\Model\Article;
 use \App\Model\User;
+use \App\Model\Categorie;
 
 /**
 * @ArticleController
@@ -25,36 +26,30 @@ class ArticleController
 
 	public function indexAction()
 	{
-		//"SELECT * FROM article"
-		$datasQuery = $this->getDbRequest()->queryAll("
+		$articlesQuery = $this->getDbRequest()->queryAll("
 			SELECT * FROM article 
-			NATURAL JOIN user WHERE article.usr_id=user.usr_id
-		");
+			LEFT JOIN user ON article.usr_id=user.usr_id
+			ORDER BY article.art_dDateCreation DESC LIMIT 30");
 
-	//	var_dump(($datasQuery));
 		$listArticle = [];
-
-		foreach ($datasQuery as $row) 
-		{
+		foreach ($articlesQuery as $row){
 			$listArticle[] = $this->entityBuilder($row);
-
-
-
-			/*$article = new Article();
-			$article->set_Id($row->{'art_id'});
-			$article->set_iAuteurId($row->{'usr_id'});
-			$article->set_sTitre($row->{'art_sTitre'});
-			$article->set_sContenu($row->{'art_sContenu'});
-			$article->set_dDateAjout($row->{'art_dDateCreation'});
-			$article->set_dDateLastModif($row->{'art_dDateLastModif'});
-			$article->set_bActif($row->{'art_bActif'});
-			$article->set_sSlug($row->{'art_sSlug'});
-			$listArticle[] = $article;
-			*/
 		}
 
-		//var_dump(count($listArticle));
 		return $listArticle;
+	}
+
+	public function articleAction($slug)
+	{
+		$articleQuery = $this->getDbRequest()->findOneBySlug("
+			SELECT * FROM article 
+			LEFT JOIN user ON article.usr_id=user.usr_id 
+			WHERE article.art_sSlug='$slug'",$slug);
+
+		if(!empty($articleQuery))
+			$article = $this->entityBuilder($articleQuery);
+
+		return $article;
 	}
 
 	private function entityBuilder($row)
@@ -80,8 +75,22 @@ class ArticleController
 			$article->set_dDateLastModif($row->{'art_dDateLastModif'});
 			$article->set_bActif($row->{'art_bActif'});
 			$article->set_sSlug($row->{'art_sSlug'});
-			return $article;
 
+			$categoryQuery = $this->getDbRequest()->findById("
+				SELECT * FROM categorie,join_article_categorie
+				WHERE join_article_categorie.art_id=:id 
+				AND join_article_categorie.cat_id=categorie.cat_id
+			", $article->get_Id());
+
+			if (!empty($categoryQuery)) {
+				$articleCategories = array();
+				foreach ($categoryQuery as $row){
+					$categories = new Categorie();
+					$categories->set_sNom($row->{'cat_sNom'});
+					$articleCategories[] = $categories;
+				}
+				$article->set_aCategories($articleCategories);
+			}
+			return $article;
 	}
 }
-
