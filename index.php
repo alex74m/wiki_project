@@ -15,6 +15,7 @@ use \App\Repository\DbRequest;
 
 // Appel des contrôleurs 
 use \App\Controller\ArticleController;
+use \App\Controller\UserController;
 
 
 // AUTOLOADER PERSO
@@ -22,7 +23,7 @@ require 'App/Autoloader.php';
 Autoloader::register();
 $instanceDb = Database::getInstance();
 $dbRequest = new DbRequest($instanceDb);
-
+$articleController = new ArticleController($dbRequest);
 // VENDOR AUTOLOADER
 require 'vendor/autoload.php';
 
@@ -33,7 +34,6 @@ $twig = new Twig_Environment($loader, array(
     'debug' => true,
 ));
 $twig->addExtension(new Twig_Extension_Debug());
-
 
 
 //ROUTING
@@ -47,40 +47,102 @@ if (isset($_GET['slug'])) {
 }else{
 	$slug = null;
 }
-
+if (isset($_GET['action'])) {
+	$action = htmlentities($_GET['action']);
+}else{
+	$action = null;
+}
 
 if ($page == 'home') {
-
 	$articleController = new ArticleController($dbRequest);
 	$listArticles = $articleController->indexAction();
 	$template = $twig->load('core/index.html.twig');
 	echo $template->render(array('listArticles' => $listArticles));
 }
 elseif ($page == 'login') {
-	if (isset($_POST)) {
-		$_SESSION['user']['bAdmin'] = 1;
+
+	if (empty($_SESSION['user']) & empty($_POST['userConnexion'])) {
+		$template = $twig->load('core/login.html.twig');
+		echo $template->render();
+
 	}
-	$template = $twig->load('core/login.html.twig');
-	echo $template->render(array('foo'=>'bar'));		
+	elseif (empty($_SESSION['user']) & !empty($_POST['userConnexion'])) {
+
+		var_dump($_POST);
+
+		// A traiter par la suite
+		$_SESSION['user']['id'] = 1;
+		$_SESSION['user']['sNom'] = 'marguet';
+		$_SESSION['user']['sPrenom'] = 'alex';
+		$_SESSION['user']['bActif'] = 1;
+
+		// Vérification des données post vers le controleur User
+		// Création de la session User
+		$flashMessage = 'Vous êtes bien connecté.';
+
+
+		$articleController = new ArticleController($dbRequest);
+		$listArticles = $articleController->indexAction();
+		$template = $twig->load('core/index.html.twig');
+		echo $template->render(array(
+			'listArticles' => $listArticles,
+			'flashMessage' => $flashMessage,
+			'flashName' => 'success'
+		));
+	}elseif (!empty($_SESSION['user'])) {
+		header('Location: home');
+	}
+
 }
 elseif ($page == 'admin') {
 
-	if (isset($_SESSION) & $_SESSION['user']['bAdmin'] == 1) {
 		$template = $twig->load('admin/manager.html.twig');
 		echo $template->render(array('foo'=>'ok'));
-	}else{
-		$template = $twig->load('core/login.html.twig');
-		echo $template->render(array('foo'=>'bar'));	
-	}
+
 
 }
-elseif ($page == 'article' & $slug != null) {
+elseif ($page == 'article' & $action == 'view' & $slug != null) {
 
 	$articleController = new ArticleController($dbRequest);
-	$article = $articleController->articleAction($slug);
+	$article = $articleController->viewArticleAction($slug);
 
 	$template = $twig->load('core/article.html.twig');
 	echo $template->render(array('article' => $article));
+
+}
+elseif ($page == 'article' & $action == 'add') {
+
+	if (!empty($_SESSION['user']) & empty($_POST['formArticle'])) {
+		$articleController = new ArticleController($dbRequest);
+		$listCategories = $articleController->findCategorieArticleAction();
+
+		$template = $twig->load('core/add_article.html.twig');
+		echo $template->render(array(
+			'listCategories' => $listCategories
+		));
+	}
+	elseif (!empty($_SESSION['user']) & !empty($_POST['formArticle'])) {
+		
+		//COMMIT ON EN EST A L'AJOUT D'ARTICLE --------------------------------------------<<<<<<<<<<<<<
+		// supprimer les instenciation de "new ArticleController()" car il ets copié en haut de page
+
+		//var_dump($_POST);
+
+		$newArticle = $articleController->addArticleAction($_POST,$_SESSION);
+
+	}
+	else{
+		$flashMessage = 'Vous devez être connecté pour ajouter un article.';
+		$articleController = new ArticleController($dbRequest);
+		$listArticles = $articleController->indexAction();
+		$template = $twig->load('core/index.html.twig');
+		echo $template->render(array(
+			'listArticles' => $listArticles,
+			'flashMessage' => $flashMessage,
+			'flashName' => 'danger'
+		));
+	}
+
 
 }
 elseif ($page == 'logout') {
@@ -88,8 +150,11 @@ elseif ($page == 'logout') {
 	session_destroy();
 	$_SESSION = array();
 	header('Location: home');
+
 }
 else{
+
+
 	$template = $twig->load('error/error404.html.twig');
 	echo $template->render();
 }

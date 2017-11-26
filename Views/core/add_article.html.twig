@@ -1,0 +1,26 @@
+{% extends "layout.html.twig" %}
+{% set active = 'addArticle' %}
+
+
+{% block title %}Ajouter une Article{% endblock %}
+
+{% block body %}
+
+    <form method="post" action="?page=article&action=add">
+		<input type="text" name="sTitre" placeholder="Ajouter un titre"><br>
+		<textarea name="sContenu" placeholder="Ajouter un contenu"></textarea> <br>
+		<div id="checkboxCategorie">
+			{% for categorie in listCategories %}
+				<div class="checkboxChoice">
+	    			<input type="checkbox" id="categorie" name="categorie_{{categorie._id}}" value="{{categorie._id}}">
+	    			<label for="categorie">{{categorie._sNom}}</label>
+	    			<span class="categorie" style="color:{{categorie._sCodeHexa}}"><i class="glyphicon glyphicon-info-sign resumeCategorie"> {{categorie._sResume}}</i></span>
+				</div>			    
+			{% endfor %}
+
+		</div>
+		<input type="submit" class="btn btn-success" name="formArticle" value="Ajouter un article">
+	</form>
+
+
+{% endblock %}

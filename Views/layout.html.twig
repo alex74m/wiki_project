@@ -16,6 +16,7 @@
     body{
       margin-top: 70px;
     }
+
   </style>
 </head>
 
@@ -37,7 +38,7 @@
               <li {% if active=='home' %}{{'class=active'}}{% endif %}><a href="home">Accueil</a></li>
               <li {% if active=='login' %}{{'class=active'}}{% endif %}><a href="login">Login</a></li>
               <li {% if active=='admin' %}{{'class=active'}}{% endif %}><a href="admin">Admin</a></li>
-              <li><a href="http://localhost/www/wiki_project/logout">Logout</a></li>
+              <li><a href="logout">Logout</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -60,7 +61,8 @@
       </div><!-- /.container -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
+    </script>
     <script src="public/js/script.js"></script>
 
 </body>

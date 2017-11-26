@@ -57,4 +57,25 @@ class DbRequest
 		return $datas;
 	}
 
+	public function checkSlug($sqlRequest, $slug){
+		$req = $this->getDb()->prepare($sqlRequest);
+		$req->bindValue(':slug', $slug, PDO::PARAM_INT);
+		$req->execute();
+		$datas = $req->rowCount();
+		$req->closeCursor();
+
+		if ($datas == 0)
+			return true;
+		else
+			return false;
+	}
+
+	public function insert($sqlRequest, $datas)
+	{
+		$req = $this->getDb()->prepare($sqlRequest);
+		$req->execute(array(
+			''
+		));
+	}
+
 }

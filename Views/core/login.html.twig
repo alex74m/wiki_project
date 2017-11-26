@@ -2,10 +2,12 @@
 {% set active = 'login' %}
 {% block title %}Login{% endblock %}
 
-{% block body %}{{foo}}
-<form action="login" method="post">
-	<input type="text" name="name" placeholder="pseudo">
-	<input type="password" name="pwd" placeholder="****">
-	<button class="btn btn-primary" type="submit">Envoyer</button>
+{% block body %}
+
+<form method="post" action="?page=login" >
+	<input type="text" name="name" placeholder="pseudo"  required="required"/>
+	<input type="password" name="pwd" placeholder="****"  required="required"/>
+	<input type="submit" class="btn btn-primary" value="Connexion" name="userConnexion"/>
 </form>
+
 {% endblock %}

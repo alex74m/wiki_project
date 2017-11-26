@@ -7,6 +7,7 @@ use \App\Repository\DbRequest;
 use \App\Model\Article;
 use \App\Model\User;
 use \App\Model\Categorie;
+use \App\Services\Slug;
 
 /**
 * @ArticleController
@@ -33,13 +34,13 @@ class ArticleController
 
 		$listArticle = [];
 		foreach ($articlesQuery as $row){
-			$listArticle[] = $this->entityBuilder($row);
+			$listArticle[] = $this->articleBuilder($row);
 		}
 
 		return $listArticle;
 	}
 
-	public function articleAction($slug)
+	public function viewArticleAction($slug)
 	{
 		$articleQuery = $this->getDbRequest()->findOneBySlug("
 			SELECT * FROM article 
@@ -47,12 +48,65 @@ class ArticleController
 			WHERE article.art_sSlug='$slug'",$slug);
 
 		if(!empty($articleQuery))
-			$article = $this->entityBuilder($articleQuery);
+			$article = $this->articleBuilder($articleQuery);
 
 		return $article;
 	}
 
-	private function entityBuilder($row)
+	public function addArticleAction($post, $session)
+	{
+		//var_dump($datas);
+		$slug = new Slug();
+		$slugName = $slug->slugify('my article');
+		var_dump($slugName);
+
+		$checkSlug = $this->getDbRequest()->checkSlug("SELECT * FROM article WHERE art_sSlug=:slug", $slugName);
+		var_dump($checkSlug);
+		if ($checkSlug === false ) {
+			
+		$slugName = $slug->createSlug('my article');
+		var_dump($slugName);
+		}
+
+
+
+
+
+		/*$insertNewArticle = $this->getDbRequest()->insert('
+			INSERT INTO article (usr_id, art_sTitre, art_sContenu, art_dDateCreation, art_sSlug)
+			VALUES (:userId, :artTitre, :artContenu, NOW(), :artSlug)
+		');
+		*/
+
+	}
+
+	public function findCategorieArticleAction()
+	{
+		$queryCategories = $this->getDbRequest()->queryAll('SELECT * FROM categorie');
+
+		$listCategories = [];
+		foreach ($queryCategories as $row){
+			$listCategories[] = $this->categoryBuilder($row);
+		}
+
+		return $listCategories;
+
+	}
+
+	private function categoryBuilder($row){
+		$categorie = new Categorie();
+		$categorie->set_id($row->{'cat_id'});
+		$categorie->set_sNom($row->{'cat_sNom'});
+		$categorie->set_sResume($row->{'cat_sResume'});
+		$categorie->set_bActif($row->{'cat_bActif'});
+		$categorie->set_sSlug($row->{'cat_sSlug'});
+		$categorie->set_sCodeHexa($row->{'cat_sCodeHexa'});
+
+		return $categorie;
+	}
+		
+
+	private function articleBuilder($row)
 	{
 			$article = new Article();
 			$article->set_Id($row->{'art_id'});
@@ -93,4 +147,5 @@ class ArticleController
 			}
 			return $article;
 	}
+	
 }

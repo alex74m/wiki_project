@@ -41,31 +41,31 @@ class Article {
 		$this->id = $id;
 	}
 	public function set_iAuteurId(User $idAuteur){
-	 $this->iAuteurId = $idAuteur;
+	 	$this->iAuteurId = $idAuteur;
 	}
 	
 	public function set_sTitre($sTitre){
-	 $this->sTitre = $sTitre;
+	 	$this->sTitre = $sTitre;
 	}
 	
 	public function set_sContenu($sContenu){
-	 $this->sContenu = $sContenu;
+	 	$this->sContenu = $sContenu;
 	}
 	
 	public function set_dDateAjout($dDateAjout){
-	 $this->dDateAjout = $dDateAjout;
+	 	$this->dDateAjout = $dDateAjout;
 	}
 	
 	public function set_dDateLastModif($dDateLastModif){
-	 $this->dDateLastModif = $dDateLastModif;
+	 	$this->dDateLastModif = $dDateLastModif;
 	}
 	
 	public function set_bActif($bActif){
-	 $this->bActif = $bActif;
+	 	$this->bActif = $bActif;
 	}
 	
 	public function set_sSlug($sSlug){
-	 $this->sSlug = $sSlug;
+	 	$this->sSlug = $sSlug;
 	}
 	
 	public function set_aCategories($aCategories){
