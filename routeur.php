@@ -8,9 +8,6 @@ if ($page == 'home') {
 }
 elseif ($page == 'inscription') {
 
-	var_dump($_SESSION);
-	var_dump($_POST);
-
 	if (empty($_SESSION['user']) & empty($_POST['userInscription'])) {
 		$template = $twig->load('core/inscription.html.twig');
 		echo $template->render();
@@ -18,29 +15,20 @@ elseif ($page == 'inscription') {
 	}
 	elseif (empty($_SESSION['user']) & !empty($_POST['userInscription'])) {
 
-		
+		$datasUser = $_POST;
+		$validAddUser = $userController->addUserInscription($datasUser);
 
-		// A traiter par la suite
-		$_SESSION['user']['id'] = 1;
-		$_SESSION['user']['sNom'] = 'marguet';
-		$_SESSION['user']['sPrenom'] = 'alex';
-		$_SESSION['user']['bActif'] = 1;
+		if ($validAddUser == false) {
+			$flashMessage = 'Nous avons rencontrer un problème. Veuillez réessayer svp.';
+			$flashName = 'danger';
+		}
 
-		// Vérification des données post vers le controleur User
-		// Création de la session User
-		$flashMessage = 'Vous êtes bien connecté.';
+		$flashMessage = 'Vous êtes bien inscrit. Veuillez vous connecter pour vous identifier.';
+		$flashName = 'success';
 
+		header('Location: login');
 
-		$listArticles = $articleController->indexAction('DESC', 30);
-		$template = $twig->load('core/index.html.twig');
-		echo $template->render(array(
-			'listArticles' => $listArticles,
-			'flashMessage' => $flashMessage,
-			'flashName' => 'success'
-		));
 	}else{
-		var_dump('ok');
-		die();
 		header('Location: home');
 	}
 }
@@ -53,26 +41,21 @@ elseif ($page == 'login') {
 	}
 	elseif (empty($_SESSION['user']) & !empty($_POST['userConnexion'])) {
 
-		var_dump($_POST);
+		
+		$userConnexion = $userController->connexionUser($_POST);
 
-		// A traiter par la suite
-		$_SESSION['user']['id'] = 1;
-		$_SESSION['user']['sNom'] = 'marguet';
-		$_SESSION['user']['sPrenom'] = 'alex';
-		$_SESSION['user']['bActif'] = 1;
+		if ($userConnexion == true) {
+			$flashMessage = 'Vous êtes bien connecté.';
+			$flashName = 'success';
+		}
 
-		// Vérification des données post vers le controleur User
-		// Création de la session User
-		$flashMessage = 'Vous êtes bien connecté.';
-
-
-		$articleController = new ArticleController($dbRequest);
+		
 		$listArticles = $articleController->indexAction('DESC', 30);
 		$template = $twig->load('core/index.html.twig');
 		echo $template->render(array(
 			'listArticles' => $listArticles,
 			'flashMessage' => $flashMessage,
-			'flashName' => 'success'
+			'flashName' => $flashName
 		));
 	}elseif (!empty($_SESSION['user'])) {
 		header('Location: home');
@@ -114,16 +97,15 @@ elseif ($page == 'article' & $action == 'add') {
 	}
 	else{
 		$flashMessage = 'Vous devez être connecté pour ajouter un article.';
+		$flashName = 'danger';
 		$listArticles = $articleController->indexAction('DESC', 30);
 		$template = $twig->load('core/index.html.twig');
 		echo $template->render(array(
 			'listArticles' => $listArticles,
 			'flashMessage' => $flashMessage,
-			'flashName' => 'danger'
+			'flashName' => $flashName
 		));
 	}
-
-
 }
 elseif ($page == 'logout') {
 	setcookie(session_name(), 'vide', time() - 25*3600);

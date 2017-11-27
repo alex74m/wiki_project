@@ -47,6 +47,17 @@ class DbRequest
 		return $datas;
 	}
 
+
+	public function findOne($sqlRequest, $field)
+	{
+		$req = $this->getDb()->prepare($sqlRequest);
+		$req->bindValue(':field', $field, PDO::PARAM_INT);
+		$req->execute();
+		$datas = $req->fetch(PDO::FETCH_OBJ);
+		$req->closeCursor();
+		return $datas;
+	}
+
 	public function findOneBySlug($sqlRequest, $slug)
 	{
 		$req = $this->getDb()->prepare($sqlRequest);

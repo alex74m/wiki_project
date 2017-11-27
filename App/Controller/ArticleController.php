@@ -25,7 +25,7 @@ class ArticleController
 		return $this->repository;
 	}
 
-	public function indexAction($order, $limit)
+	public function indexAction($order = 'DESC', $limit = 30)
 	{
 		$articlesQuery = $this->getDbRequest()->queryAll("
 			SELECT * FROM article 

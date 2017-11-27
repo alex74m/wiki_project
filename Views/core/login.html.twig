@@ -4,9 +4,10 @@
 
 {% block body %}
 
+<h1>Formulaire de connexion </h1>
 <form method="post" action="?page=login" >
-	<input type="text" name="name" placeholder="pseudo"  required="required"/>
-	<input type="password" name="pwd" placeholder="****"  required="required"/>
+	<input type="text" name="_sMail" placeholder="Votre e-mail"  required="required"/>
+	<input type="password" name="_sPwd" placeholder="*******"  required="required"/>
 	<input type="submit" class="btn btn-primary" value="Connexion" name="userConnexion"/>
 </form>
 

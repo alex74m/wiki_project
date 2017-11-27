@@ -16,6 +16,9 @@
     body{
       margin-top: 70px;
     }
+    span.alert{
+      padding: 2px !important;
+    }
     span.btn-info{
       margin: 0 5px 0 5px !important;
       padding: 4px;
@@ -64,14 +67,11 @@
           <div class="col-md-3">
             {% include 'core/smart_menu.html.twig' %}         
           </div>
-
-          <div id="body" class="col-md-9">
+              <div id="body" class="col-md-9">
             {% block body %}
 
             {% endblock %}          
-
-        </div>
-
+          </div>
       </div>
 
 

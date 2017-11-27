@@ -5,10 +5,10 @@
 {% block body %}
 
 {% if flashMessage is defined %}
-    <span class="alert alert-{{flashName}}">{{flashMessage}} </span>
+    <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
 {% endif %}
-
-    
+<br><br>
+     <div id="body" class="col-lg-12">
         {% for article in listArticles %}
 
         	<div class="col-md-4">
@@ -27,5 +27,5 @@
                 </div> 
             </div>
         {% endfor %}
-		
+	</div>
 {% endblock %}

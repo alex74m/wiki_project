@@ -3,11 +3,13 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
+<h1>Formulaire d'inscription</h1>
 
 <form method="post" action="?page=inscription" >
-	<input type="text" name="name" placeholder="pseudo"/>
-	<input type="text" name="name" placeholder="mail"/>
-	<input type="password" name="pwd" placeholder="****"/>
+	<input type="text" name="_sNom" placeholder="Votre Nom"/><br>
+	<input type="text" name="_sPrenom" placeholder="Votre Prénom"/><br>
+	<input type="text" name="_sMail" placeholder="Votre e-mail"/><br>
+	<input type="password" name="_sPwd" placeholder="********"/><br>
 	<input type="submit" class="btn btn-primary" name="userInscription"/>
 </form>
 
