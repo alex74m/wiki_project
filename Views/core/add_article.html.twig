@@ -7,8 +7,8 @@
 {% block body %}
 
     <form method="post" action="?page=article&action=add">
-		<input type="text" name="sTitre" placeholder="Ajouter un titre"><br>
-		<textarea name="sContenu" placeholder="Ajouter un contenu"></textarea> <br>
+		<input type="text" name="_sTitre" placeholder="Ajouter un titre"><br>
+		<textarea name="_sContenu" placeholder="Ajouter un contenu" rows="20px" cols="50px"></textarea> <br>
 		<div id="checkboxCategorie">
 			{% for categorie in listCategories %}
 				<div class="checkboxChoice">

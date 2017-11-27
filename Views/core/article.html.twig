@@ -7,7 +7,9 @@
     {{dump(item)}}
 {% endfor %}
     <div class="row">
-                <h2>{{ article._sTitre }}</h2> <cite>By {{ article._iAuteurId._sNom }}</cite>
+                <h2>{{ article._sTitre }}</h2> <cite>Par : {{ article._iAuteurId._sNom }} le : {{article._dDateAjout|date("d/m/Y à h:m:s")}} </cite> 
+                <br>
+                <br>
                 <p> {{ article._sContenu }}</p>
                 <div class="tags">
                     <h4>Tags <span class="glyphicon glyphicon-tag"></span></h4>

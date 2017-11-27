@@ -57,9 +57,11 @@ class DbRequest
 		return $datas;
 	}
 
-	public function checkSlug($sqlRequest, $slug){
-		$req = $this->getDb()->prepare($sqlRequest);
-		$req->bindValue(':slug', $slug, PDO::PARAM_INT);
+	public function checkField($table, $champ, $field){
+		$req = $this->getDb()->prepare("
+			SELECT $champ FROM $table WHERE $champ=:field
+		");
+		$req->bindValue(':field', $field, PDO::PARAM_INT);
 		$req->execute();
 		$datas = $req->rowCount();
 		$req->closeCursor();
@@ -70,12 +72,15 @@ class DbRequest
 			return false;
 	}
 
-	public function insert($sqlRequest, $datas)
+	public function insert($sqlRequest, $params = null)
 	{
 		$req = $this->getDb()->prepare($sqlRequest);
-		$req->execute(array(
-			''
-		));
+		$req->execute($params);
+		$lastId = $this->getDb()->lastInsertId();
+		return $lastId;
 	}
+
+
+
 
 }

@@ -7,7 +7,7 @@ use \App\Repository\DbRequest;
 class Slug
 {
 
-	public function slugify($text)
+	public static function slugify($text)
 	{
 		$text = preg_replace('~[^\pL\d]+~u', '-', $text);
 		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
@@ -19,10 +19,10 @@ class Slug
 		return $text;
 	}
 
-	public function createSlug($text)
+	public static function createSlug($text)
 	{
 
-		$text = $this->slugify($text);
+		$text = self::slugify($text);
 		$lastChar = substr($text, -1, 1);
 		settype($lastChar, 'integer');
 

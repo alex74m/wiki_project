@@ -16,6 +16,19 @@
     body{
       margin-top: 70px;
     }
+    span.btn-info{
+      margin: 0 5px 0 5px !important;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    span.btn-info a{
+      color: white;
+    }
+    div#body{
+      border: 1px solid lightgrey;
+      border-radius: 10px;
+      padding: 20px;
+    }
 
   </style>
 </head>
@@ -38,6 +51,7 @@
               <li {% if active=='home' %}{{'class=active'}}{% endif %}><a href="home">Accueil</a></li>
               <li {% if active=='login' %}{{'class=active'}}{% endif %}><a href="login">Login</a></li>
               <li {% if active=='admin' %}{{'class=active'}}{% endif %}><a href="admin">Admin</a></li>
+              <li {% if active=='inscription' %}{{'class=active'}}{% endif %}><a href="inscription">Inscription</a></li>
               <li><a href="logout">Logout</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -46,19 +60,21 @@
 
       <div class="container">
 
-        <div class="col-md-3">
-          {% include 'core/smart_menu.html.twig' %}         
+
+          <div class="col-md-3">
+            {% include 'core/smart_menu.html.twig' %}         
+          </div>
+
+          <div id="body" class="col-md-9">
+            {% block body %}
+
+            {% endblock %}          
+
         </div>
 
-        <div class="col-md-9">
-          {% block body %}
-
-          {% endblock %}          
-        </div>
+      </div>
 
 
-
-      </div><!-- /.container -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">

@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-
 use \App\Repository\DbRequest;
 use \App\Model\Article;
 use \App\Model\User;
 use \App\Model\Categorie;
 use \App\Services\Slug;
+
 
 /**
 * @ArticleController
@@ -25,12 +25,12 @@ class ArticleController
 		return $this->repository;
 	}
 
-	public function indexAction()
+	public function indexAction($order, $limit)
 	{
 		$articlesQuery = $this->getDbRequest()->queryAll("
 			SELECT * FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id
-			ORDER BY article.art_dDateCreation DESC LIMIT 30");
+			ORDER BY article.art_dDateCreation $order LIMIT $limit");
 
 		$listArticle = [];
 		foreach ($articlesQuery as $row){
@@ -53,36 +53,67 @@ class ArticleController
 		return $article;
 	}
 
-	public function addArticleAction($post, $session)
+	public function addArticleAction($post, $user)
 	{
-		//var_dump($datas);
-		$slug = new Slug();
-		$slugName = $slug->slugify('my article');
-		var_dump($slugName);
+		$userId = $user['user']['id'];
+		$user = new User();
+		$user->set_id($userId);
 
-		$checkSlug = $this->getDbRequest()->checkSlug("SELECT * FROM article WHERE art_sSlug=:slug", $slugName);
-		var_dump($checkSlug);
-		if ($checkSlug === false ) {
-			
-		$slugName = $slug->createSlug('my article');
-		var_dump($slugName);
+
+		$slugName = Slug::slugify($post['_sTitre']);
+		$checkSlug = $this->getDbRequest()->checkField('article', 'art_sSlug', $slugName);
+		if ($checkSlug === false) {
+			$slugName = Slug::createSlug($post['_sTitre']);
 		}
 
+		$article = new Article();
+		$article->set_iAuteurId($user);
+		$article->set_sTitre($post['_sTitre']);
+		$article->set_sContenu($post['_sContenu']);
+		$article->set_bActif(0);
+		$article->set_sSlug($slugName);
+	
+		$params = array(
+			':usr_id' => $article->get_iAuteurId()->get_id(),
+			':art_sTitre' => $article->get_sTitre(),
+			':art_sContenu' => $article->get_sContenu(),
+			':art_sSlug' => $slugName
 
+		);
 
-
-
-		/*$insertNewArticle = $this->getDbRequest()->insert('
+		
+		$insertNewArticle = $this->getDbRequest()->insert("
 			INSERT INTO article (usr_id, art_sTitre, art_sContenu, art_dDateCreation, art_sSlug)
-			VALUES (:userId, :artTitre, :artContenu, NOW(), :artSlug)
-		');
-		*/
+			VALUES (:usr_id, :art_sTitre, :art_sContenu, NOW(), :art_sSlug)
+		",$params);
+		
 
+		foreach ($post as $key => $value) {
+			$keyName = explode('_', $key);
+			$keyName = $keyName[0];
+			if ($keyName === 'categorie') {
+				$checkCategorie =$this->getDbRequest()->checkField('categorie', 'cat_id', $value);
+				if ($checkCategorie === false) {
+					$params = array(
+						'art_id' => $insertNewArticle,
+						'cat_id' => $value
+					);
+					$this->getDbRequest()->insert("
+						INSERT INTO join_article_categorie (art_id, cat_id)
+						VALUES (:art_id, :cat_id)
+					", $params);
+				}
+			}
+		}
+		return $article;
 	}
 
 	public function findCategorieArticleAction()
 	{
-		$queryCategories = $this->getDbRequest()->queryAll('SELECT * FROM categorie');
+		$queryCategories = $this->getDbRequest()->queryAll('
+			SELECT cat_id, cat_sNom, cat_sResume, cat_bActif, cat_sSlug, cat_sCodeHexa
+			FROM categorie
+		');
 
 		$listCategories = [];
 		foreach ($queryCategories as $row){
@@ -139,8 +170,7 @@ class ArticleController
 			if (!empty($categoryQuery)) {
 				$articleCategories = array();
 				foreach ($categoryQuery as $row){
-					$categories = new Categorie();
-					$categories->set_sNom($row->{'cat_sNom'});
+					$categories = $this->categoryBuilder($row);
 					$articleCategories[] = $categories;
 				}
 				$article->set_aCategories($articleCategories);

@@ -1,0 +1,14 @@
+{% extends "layout.html.twig" %}
+{% set active = 'inscription' %}
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+
+<form method="post" action="?page=inscription" >
+	<input type="text" name="name" placeholder="pseudo"/>
+	<input type="text" name="name" placeholder="mail"/>
+	<input type="password" name="pwd" placeholder="****"/>
+	<input type="submit" class="btn btn-primary" name="userInscription"/>
+</form>
+
+{% endblock %}

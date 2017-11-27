@@ -7,19 +7,19 @@
 {% if flashMessage is defined %}
     <span class="alert alert-{{flashName}}">{{flashMessage}} </span>
 {% endif %}
-     <div class="container">
+
     
         {% for article in listArticles %}
 
         	<div class="col-md-4">
                 <h2>{{ article._sTitre }}</h2> <cite>By {{ article._iAuteurId._sNom }}</cite>
-                <p> {{ article._sContenu }}</p>
+                <p> {{ article._sContenu|truncate(20, true) }}</p>
                 <div>
                     <div class="more label"><a href="article/view/{{article._sSlug}}">En savoir +</a></div> 
                     <div class="tags">
                     <h4>Tags <span class="glyphicon glyphicon-tag"></span></h4>
             {% for category in article._aCategories %}
-                <span class="btn-info">
+                <span class="btn-info" style="background-color:{{ category._sCodeHexa }}">
                     <a href="#">{{ category._sNom }}</a>
                 </span>
             {% endfor %}
@@ -27,6 +27,5 @@
                 </div> 
             </div>
         {% endfor %}
-    </div>
 		
 {% endblock %}
