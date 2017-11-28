@@ -57,6 +57,11 @@ if (isset($_GET['action'])) {
 }else{
 	$action = null;
 }
+if (isset($_GET['search'])) {
+	$search = htmlentities($_GET['search']);
+}else{
+	$search = null;
+}
 if (isset($_SESSION['user'])) {
 	$app_session_user = $_SESSION['user'];
 }else

@@ -108,12 +108,13 @@ class ArticleController
 		return $article;
 	}
 
-	public function searchArticles($keyWord)
+	public function searchArticlesByKeyWord($keyWord)
 	{
+
 		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
 			SELECT * FROM article 
-			LEFT JOIN user ON article.usr_id=user.usr_id
-			ORDER BY article.art_dDateCreation DESC
+			LEFT JOIN user ON article.usr_id=user.usr_id 
+			WHERE CONCAT(article.art_sTitre, article.art_sContenu,article.art_dDateCreation,article.art_sSlug) 
 			LIKE :keyWord
 			", $keyWord);
 
@@ -124,7 +125,24 @@ class ArticleController
 
 		return $listArticle;
 	}
+	public function searchArticlesByCategorie($keyWord)
+	{
 
+		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
+			SELECT * FROM article 
+			LEFT JOIN user ON article.usr_id=user.usr_id 
+			LEFT JOIN join_article_categorie ON join_article_categorie.art_id=article.art_id 
+			LEFT JOIN categorie ON categorie.cat_id=join_article_categorie.cat_id 
+			LIKE categorie.cat_sNom=:keyWord
+			", $keyWord);
+
+		$listArticle = [];
+		foreach ($articlesQuery as $row){
+			$listArticle[] = $this->articleBuilder($row);
+		}
+
+		return $listArticle;
+	}
 
 	public function findCategorieArticleAction()
 	{

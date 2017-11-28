@@ -1,3 +1,11 @@
-<a href="home">Accueil</a><br>
-<a href="article/add">Ajouter un article</a><br>
-<a href="search">Rechercher un article</a><br>
+<ul>
+<li {% if active=='home' %}{{'class="active"'}}{% endif %}>
+	<a href="home">Accueil</a>
+</li>
+<li>
+	<a href="article/add">Ajouter un article</a>
+</li>
+<li {% if active=='search' %}{{'class="active"'}}{% endif %}>
+	<a href="search">Rechercher un article</a>
+</li>
+</ul>

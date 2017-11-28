@@ -66,7 +66,7 @@ class DbRequest
 			SELECT $champ FROM $table WHERE $champ=:field
 		");
 		//$req->bindValue(':field', $field, PDO::PARAM_INT);
-		$req->execute(array(':field', $field));
+		$req->execute(array(':field'=> $field));
 		$datas = $req->rowCount();
 		$req->closeCursor();
 
@@ -86,9 +86,10 @@ class DbRequest
 
 	public function queryAllBySearch($sqlRequest, $keyWord){
 		$req = $this->getDb()->prepare($sqlRequest);
-		$req->execute(array(':keyWord', '%'.$keyWord.'%'));
+		$req->execute(array(':keyWord' => '%'.$keyWord.'%'));
 		$datas = $req->fetchAll(PDO::FETCH_OBJ);
 		$req->closeCursor();
+
 		return $datas;
 	}
 }

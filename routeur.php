@@ -1,5 +1,5 @@
 <?php
-
+var_dump($search);
 
 if ($page == 'home') {
 	$listArticles = $articleController->indexAction('DESC', 30);
@@ -113,23 +113,41 @@ elseif ($page == 'article' & $action == 'add') {
 		));
 	}
 }
-elseif ($page == 'search') {
-var_dump($_POST);
-	if (!empty($_POST)) {
-		var_dump($keyWord);
-		$keyWord = htmlentities($_POST['_search']);
-		$listArticles = $articleController->searchArticles($keyWord);
+elseif ($page == 'search' & $action != null) {
 
-		$template = $twig->load('core/search.html.twig');
+	if (!empty($action)) 
+	{
+		$keyWord = $action;
+		$listArticles = $articleController->searchArticlesByCategorie($keyWord);
+
+		$template = $twig->load('core/index.html.twig');
 		echo $template->render(array(
 			'listArticles' => $listArticles,
 			'app_session_user' => $app_session_user
 		));
 
+	}else{
+		$template = $twig->load('core/search.html.twig');
+		echo $template->render();		
 	}
+}
+elseif ($page == 'search' & $search == null) {
 
-	$template = $twig->load('core/search.html.twig');
-	echo $template->render();
+	if (!empty($_POST)) 
+	{
+		$keyWord = htmlentities($_POST['_search']);
+		$listArticles = $articleController->searchArticlesByKeyWord($keyWord);
+	
+		$template = $twig->load('core/index.html.twig');
+		echo $template->render(array(
+			'listArticles' => $listArticles,
+			'app_session_user' => $app_session_user
+		));
+
+	}else{
+		$template = $twig->load('core/search.html.twig');
+		echo $template->render();		
+	}
 }
 elseif ($page == 'logout') {
 	setcookie(session_name(), 'vide', time() - 25*3600);
