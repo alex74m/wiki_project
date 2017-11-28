@@ -57,5 +57,11 @@ if (isset($_GET['action'])) {
 }else{
 	$action = null;
 }
+if (isset($_SESSION['user'])) {
+	$app_session_user = $_SESSION['user'];
+}else
+{
+	$app_session_user = null;
+}
 
 require_once 'routeur.php';

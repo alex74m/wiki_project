@@ -14,7 +14,7 @@
                 <div class="tags">
                     <h4>Tags <span class="glyphicon glyphicon-tag"></span></h4>
                     {% for category in article._aCategories %}
-                        <span class="btn-info">
+                        <span class="btn-info" style="background-color:{{ category._sCodeHexa }} ">
                         <a href="#">{{ category._sNom }}</a>
                         </span>
                     {% endfor %}

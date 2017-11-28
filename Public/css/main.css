@@ -1,0 +1,22 @@
+    body{
+      margin-top: 70px;
+    }
+    span.alert{
+      padding: 2px !important;
+    }
+    #connect{
+      margin-top: 10px !important;
+    }
+    span.btn-info{
+      margin: 0 5px 0 5px !important;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    span.btn-info a{
+      color: white;
+    }
+    div#body{
+      border: 1px solid lightgrey;
+      border-radius: 10px;
+      padding: 20px;
+    }

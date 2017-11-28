@@ -75,11 +75,8 @@ class UserController
 			$checkPsw = Crypt::decrypt($pswHash, $psw);
 	
 			if ($checkPsw ==  true) {
-				$_SESSION['user']['id'] = $infoUser->{'usr_id'};
-				$_SESSION['user']['nom'] = $infoUser->{'usr_sNom'};
-				$_SESSION['user']['prenom'] = $infoUser->{'usr_sPrenom'};
-				$_SESSION['user']['mail'] = $infoUser->{'usr_sMail'};
-				return true;
+				$user = $this->userBuilder($infoUser);
+				return $user;
 			}
 			else
 			{
@@ -92,9 +89,19 @@ class UserController
 
 	}
 
-	public function userBuilder($row)
+	public function userBuilder($entity)
 	{
-
+		$user = new User();
+		$user->set_id($entity->{'usr_id'});
+		$user->set_sNom($entity->{'usr_sNom'});
+		$user->set_sPrenom($entity->{'usr_sPrenom'});
+		$user->set_sMail($entity->{'usr_sMail'});
+		$user->set_sPwd($entity->{'usr_sPwd'});
+		$user->set_sToken($entity->{'usr_sToken'});
+		$user->set_bActif($entity->{'usr_bActif'});
+		$user->set_bAdmin($entity->{'usr_bAdmin'});
+		$user->set_sAvatar($entity->{'usr_sAvatar'});
+		return $user;
 	}
 
 }

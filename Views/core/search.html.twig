@@ -1,0 +1,47 @@
+{% extends "layout.html.twig" %}
+{% set active = 'search' %}
+{% block title %}Recherche{% endblock %}
+
+{% block body %}
+
+<h1>Rechercher un article</h1>
+
+<div class="search">
+	<form method="post" action="search">
+		<input type="text" class="form-control col-md-7" name="_search" maxlength="64" placeholder="Rechercher un article..." />
+ 		<button type="submit" class="btn btn-primary">Rechercher</button>
+	</form>
+
+</div>
+
+
+
+{% if flashMessage is defined %}
+    <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
+{% endif %}
+
+{% if listArticles is defined %}
+<br><br>
+     <div id="body" class="col-lg-12">
+        {% for article in listArticles %}
+
+        	<div class="col-md-4">
+                <h2>{{ article._sTitre }}</h2> <cite>By {{ article._iAuteurId._sNom }}</cite>
+                <p> {{ article._sContenu|truncate(20, true) }}</p>
+                <div>
+                    <div class="more label"><a href="article/view/{{article._sSlug}}">En savoir +</a></div> 
+                    <div class="tags">
+                    <h4>Tags <span class="glyphicon glyphicon-tag"></span></h4>
+            {% for category in article._aCategories %}
+                <span class="btn-info" style="background-color:{{ category._sCodeHexa }}">
+                    <a href="#">{{ category._sNom }}</a>
+                </span>
+            {% endfor %}
+                    </div>    
+                </div> 
+            </div>
+        {% endfor %}
+	</div>
+{% endif %}
+
+{% endblock %}

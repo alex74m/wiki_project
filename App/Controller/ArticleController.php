@@ -108,6 +108,24 @@ class ArticleController
 		return $article;
 	}
 
+	public function searchArticles($keyWord)
+	{
+		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
+			SELECT * FROM article 
+			LEFT JOIN user ON article.usr_id=user.usr_id
+			ORDER BY article.art_dDateCreation DESC
+			LIKE :keyWord
+			", $keyWord);
+
+		$listArticle = [];
+		foreach ($articlesQuery as $row){
+			$listArticle[] = $this->articleBuilder($row);
+		}
+
+		return $listArticle;
+	}
+
+
 	public function findCategorieArticleAction()
 	{
 		$queryCategories = $this->getDbRequest()->queryAll('
