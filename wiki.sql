@@ -2,10 +2,10 @@
 -- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 23, 2017 at 02:21 PM
--- Server version: 10.1.28-MariaDB
--- PHP Version: 7.1.11
+-- Hôte : localhost
+-- Généré le :  mer. 29 nov. 2017 à 15:04
+-- Version du serveur :  10.1.28-MariaDB
+-- Version de PHP :  7.1.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `wiki`
+-- Base de données :  `wiki`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `article`
+-- Structure de la table `article`
 --
 
 CREATE TABLE `article` (
@@ -39,10 +39,23 @@ CREATE TABLE `article` (
   `art_sSlug` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Déchargement des données de la table `article`
+--
+
+INSERT INTO `article` (`art_id`, `usr_id`, `art_sTitre`, `art_sContenu`, `art_dDateCreation`, `art_dDateLastModif`, `art_bActif`, `art_sSlug`) VALUES
+(4, 1, 'My article', 'Lorem ipsumSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur', '2017-11-06 00:00:00', NULL, 0, 'my-article'),
+(6, 4, 'My article 2', 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur', '2017-11-17 00:00:00', NULL, 0, 'my-article-2'),
+(52, 1, 'aaaa', 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur', '2017-11-27 12:08:59', NULL, 0, 'aaaa'),
+(53, 1, 'Un nouvel article', 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur', '2017-11-27 12:10:53', NULL, 0, 'un-nouvel-article'),
+(54, 13, 'Mon belle article', 'sd,dkjhsv sdhdhsfoii fiosdfiosdfhdfhsdifksdqhqfsdufsdfsqdf', '2017-11-27 16:11:17', NULL, 0, 'mon-belle-article'),
+(55, 13, 'Mon titre', 'Lorem ipsum blakjbsdjbjdbvd', '2017-11-27 16:20:33', NULL, 0, 'mon-titre'),
+(57, 1, 'Mon nouvel article', 'Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab Lorem Ipsum blab ', '2017-11-29 12:45:09', NULL, 0, 'mon-nouvel-article');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categorie`
+-- Structure de la table `categorie`
 --
 
 CREATE TABLE `categorie` (
@@ -54,10 +67,19 @@ CREATE TABLE `categorie` (
   `cat_sCodeHexa` varchar(7) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Déchargement des données de la table `categorie`
+--
+
+INSERT INTO `categorie` (`cat_id`, `cat_sNom`, `cat_sResume`, `cat_bActif`, `cat_sSlug`, `cat_sCodeHexa`) VALUES
+(3, 'World', 'Relatif au monde', 1, 'world', '#0011A5'),
+(4, 'Voyage', 'Relatif au voyage', 1, 'voyage', '#A50000'),
+(5, 'Finance', 'Relatif à la finance', 1, 'finance', '#16A500');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `join_article_categorie`
+-- Structure de la table `join_article_categorie`
 --
 
 CREATE TABLE `join_article_categorie` (
@@ -65,10 +87,33 @@ CREATE TABLE `join_article_categorie` (
   `cat_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Déchargement des données de la table `join_article_categorie`
+--
+
+INSERT INTO `join_article_categorie` (`art_id`, `cat_id`) VALUES
+(4, 3),
+(4, 4),
+(6, 3),
+(6, 5),
+(52, 3),
+(52, 4),
+(52, 5),
+(53, 3),
+(53, 4),
+(54, 3),
+(54, 4),
+(54, 5),
+(55, 3),
+(55, 4),
+(55, 5),
+(57, 3),
+(57, 4);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Structure de la table `user`
 --
 
 CREATE TABLE `user` (
@@ -77,18 +122,28 @@ CREATE TABLE `user` (
   `usr_sPrenom` varchar(255) DEFAULT NULL,
   `usr_sMail` varchar(255) NOT NULL,
   `usr_sPwd` varchar(255) NOT NULL,
-  `usr_sToken` varchar(255) DEFAULT NULL,
+  `usr_sToken` varchar(255) NOT NULL,
   `usr_bActif` tinyint(4) DEFAULT '0',
   `usr_bAdmin` tinyint(4) DEFAULT '0',
   `usr_sAvatar` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Indexes for dumped tables
+-- Déchargement des données de la table `user`
+--
+
+INSERT INTO `user` (`usr_id`, `usr_sNom`, `usr_sPrenom`, `usr_sMail`, `usr_sPwd`, `usr_sToken`, `usr_bActif`, `usr_bAdmin`, `usr_sAvatar`) VALUES
+(1, 'marguet', 'Alex', 'okok@yah.fr', '$2y$10$xsaunkCcxSAfluSJeKdy9eZqRg9MG4OZWO1pKl.3yRDNF.tf270Aq', 'dsfsdfdsf', 0, 0, NULL),
+(4, 'marguet', 'Alex', 'dslksssssd@yah.fr', '$2y$10$xsaunkCcxSAfluSJeKdy9eZqRg9MG4OZWO1pKl.3yRDNF.tf270Aq', 'dsfsdfdsfsssss', 0, 0, NULL),
+(13, 'Marguet', 'Alex', 'ok@yah.fr', '$2y$10$xsaunkCcxSAfluSJeKdy9eZqRg9MG4OZWO1pKl.3yRDNF.tf270Aq', 'db36f65997db4580a3984e69b60f872378ab0532493e1255eb59de83d2d2bf6d5a1c270fae4d0', 0, 1, NULL),
+(14, 'moh', 'sto', 'oki@yah.fr', '$2y$10$u8JmIr8vRI76Qy0uH//1Z.JrYVgb5NYEU4mNBVFktZiOPDpg8rPv.', 'fab5ea373aa91a3731cede30bf878e128df8bed728a0f162feedb4dea1a53c985a1ebd534476f', 0, 0, NULL);
+
+--
+-- Index pour les tables déchargées
 --
 
 --
--- Indexes for table `article`
+-- Index pour la table `article`
 --
 ALTER TABLE `article`
   ADD PRIMARY KEY (`art_id`,`usr_id`),
@@ -98,7 +153,7 @@ ALTER TABLE `article`
   ADD KEY `idx_art_dDateCreation` (`art_dDateCreation`);
 
 --
--- Indexes for table `categorie`
+-- Index pour la table `categorie`
 --
 ALTER TABLE `categorie`
   ADD PRIMARY KEY (`cat_id`),
@@ -106,7 +161,7 @@ ALTER TABLE `categorie`
   ADD UNIQUE KEY `idx_cat_sNom` (`cat_sNom`);
 
 --
--- Indexes for table `join_article_categorie`
+-- Index pour la table `join_article_categorie`
 --
 ALTER TABLE `join_article_categorie`
   ADD PRIMARY KEY (`art_id`,`cat_id`),
@@ -114,7 +169,7 @@ ALTER TABLE `join_article_categorie`
   ADD KEY `fk_article_has_categorie_article_idx` (`art_id`);
 
 --
--- Indexes for table `user`
+-- Index pour la table `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`usr_id`),
@@ -123,39 +178,39 @@ ALTER TABLE `user`
   ADD KEY `idx_usr_sNom_sPrenom` (`usr_sNom`,`usr_sPrenom`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT pour les tables déchargées
 --
 
 --
--- AUTO_INCREMENT for table `article`
+-- AUTO_INCREMENT pour la table `article`
 --
 ALTER TABLE `article`
-  MODIFY `art_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `art_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
--- AUTO_INCREMENT for table `categorie`
+-- AUTO_INCREMENT pour la table `categorie`
 --
 ALTER TABLE `categorie`
-  MODIFY `cat_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `cat_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `usr_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `usr_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- Constraints for dumped tables
+-- Contraintes pour les tables déchargées
 --
 
 --
--- Constraints for table `article`
+-- Contraintes pour la table `article`
 --
 ALTER TABLE `article`
   ADD CONSTRAINT `fk_article_user1` FOREIGN KEY (`usr_id`) REFERENCES `user` (`usr_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Constraints for table `join_article_categorie`
+-- Contraintes pour la table `join_article_categorie`
 --
 ALTER TABLE `join_article_categorie`
   ADD CONSTRAINT `fk_article_has_categorie_article` FOREIGN KEY (`art_id`) REFERENCES `article` (`art_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
