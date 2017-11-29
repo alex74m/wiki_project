@@ -76,6 +76,16 @@ class DbRequest
 			return false;
 	}
 
+	public function queryJoinCategoriesByArticle($idArticle){
+		$categoryQuery = $this->findById("
+				SELECT * FROM categorie,join_article_categorie
+				WHERE join_article_categorie.art_id=:id 
+				AND join_article_categorie.cat_id=categorie.cat_id
+		", $idArticle);
+
+		return $categoryQuery;
+	}
+
 	public function insert($sqlRequest, $params = null)
 	{
 		$req = $this->getDb()->prepare($sqlRequest);
@@ -88,6 +98,7 @@ class DbRequest
 		$req = $this->getDb()->prepare($sqlRequest);
 		$req->execute(array(':keyWord' => '%'.$keyWord.'%'));
 		$datas = $req->fetchAll(PDO::FETCH_OBJ);
+
 		$req->closeCursor();
 
 		return $datas;

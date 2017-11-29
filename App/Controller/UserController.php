@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use \App\Controller\Interfaces\InterfaceController;
+
 use \App\Repository\DbRequest;
 use \App\Model\User;
 
@@ -9,14 +11,17 @@ use \App\Services\Crypt;
 use \App\Services\Token;
 
 
-class UserController
+class UserController implements InterfaceController
 {
 	private $repository;
 
 	public function __construct(DbRequest $dbRequest){
 		$this->repository = $dbRequest;
 	}
-
+	/**
+	 * Get the entity repository App\Repository\dBrequest
+	 * return PDO Object
+	 */
 	public function getDbRequest(){
 		return $this->repository;
 	}
@@ -75,7 +80,7 @@ class UserController
 			$checkPsw = Crypt::decrypt($pswHash, $psw);
 	
 			if ($checkPsw ==  true) {
-				$user = $this->userBuilder($infoUser);
+				$user = $this->entityBuilder($infoUser);
 				return $user;
 			}
 			else
@@ -85,22 +90,26 @@ class UserController
 		}else{
 			trigger_error("Cette e-mail n'est pas valide.");
 		}
-
-
 	}
 
-	public function userBuilder($entity)
+	/**
+	 * use Interface InterfaceController
+	 * Set entities User App\Model\User
+	 * return array Objects
+	 * @param string $row 
+	 */
+	public function entityBuilder($row)
 	{
 		$user = new User();
-		$user->set_id($entity->{'usr_id'});
-		$user->set_sNom($entity->{'usr_sNom'});
-		$user->set_sPrenom($entity->{'usr_sPrenom'});
-		$user->set_sMail($entity->{'usr_sMail'});
-		$user->set_sPwd($entity->{'usr_sPwd'});
-		$user->set_sToken($entity->{'usr_sToken'});
-		$user->set_bActif($entity->{'usr_bActif'});
-		$user->set_bAdmin($entity->{'usr_bAdmin'});
-		$user->set_sAvatar($entity->{'usr_sAvatar'});
+		$user->set_id($row->{'usr_id'});
+		$user->set_sNom($row->{'usr_sNom'});
+		$user->set_sPrenom($row->{'usr_sPrenom'});
+		$user->set_sMail($row->{'usr_sMail'});
+		$user->set_sPwd($row->{'usr_sPwd'});
+		$user->set_sToken($row->{'usr_sToken'});
+		$user->set_bActif($row->{'usr_bActif'});
+		$user->set_bAdmin($row->{'usr_bAdmin'});
+		$user->set_sAvatar($row->{'usr_sAvatar'});
 		return $user;
 	}
 

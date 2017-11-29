@@ -13,7 +13,7 @@ use \App\Model\Categorie;
 use \App\Repository\Database\Database;
 use \App\Repository\DbRequest;
 
-// Appel des contrôleurs 
+// Appel des contrôleurs
 use \App\Controller\ArticleController;
 use \App\Controller\UserController;
 
@@ -21,6 +21,8 @@ use \App\Controller\UserController;
 // AUTOLOADER PERSO
 require 'App/Autoloader.php';
 Autoloader::register();
+
+//CONNEXION A LA BDD
 $instanceDb = Database::getInstance();
 $dbRequest = new DbRequest($instanceDb);
 
@@ -56,11 +58,6 @@ if (isset($_GET['action'])) {
 	$action = htmlentities($_GET['action']);
 }else{
 	$action = null;
-}
-if (isset($_GET['search'])) {
-	$search = htmlentities($_GET['search']);
-}else{
-	$search = null;
 }
 if (isset($_SESSION['user'])) {
 	$app_session_user = $_SESSION['user'];

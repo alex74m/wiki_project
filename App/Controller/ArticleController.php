@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use \App\Controller\Interfaces\InterfaceController;
+use \App\Controller\CategorieController;
+use \App\Controller\UserController;
 use \App\Repository\DbRequest;
 use \App\Model\Article;
 use \App\Model\User;
@@ -12,20 +15,33 @@ use \App\Services\Slug;
 /**
 * @ArticleController
 */
-class ArticleController
+class ArticleController implements InterfaceController
 {
-	
+
 	private $repository;
+	private $categoryBuilder;
+	private $userBuilder;
 
 	public function __construct(DbRequest $dbRequest){
 		$this->repository = $dbRequest;
+		$this->categoryBuilder = new CategorieController($dbRequest);
+		$this->userBuilder = new UserController($dbRequest);
 	}
-
+	/**
+	 * Get the entity repository App\Repository\dBrequest
+	 * return PDO Object
+	 */
 	public function getDbRequest(){
 		return $this->repository;
 	}
 
-	public function indexAction($order = 'DESC', $limit = 30)
+	/**
+	 * Get entities Article App\Model\Article
+	 * return array Article Objects
+	 * @param string $order Set the order of Articles - Homepage (index.php)
+	 * @param null|int $limit The number of Article in loop
+	 */
+	public function indexAction($order = 'DESC', $limit = null)
 	{
 		$articlesQuery = $this->getDbRequest()->queryAll("
 			SELECT * FROM article 
@@ -34,12 +50,17 @@ class ArticleController
 
 		$listArticle = [];
 		foreach ($articlesQuery as $row){
-			$listArticle[] = $this->articleBuilder($row);
+			$listArticle[] = $this->entityBuilder($row);
 		}
 
 		return $listArticle;
 	}
 
+	/**
+	 * Get entity Article App\Model\Article
+	 * return Article Object
+	 * @param string $slug A string with slug name
+	 */
 	public function viewArticleAction($slug)
 	{
 		$articleQuery = $this->getDbRequest()->findOneBySlug("
@@ -48,13 +69,24 @@ class ArticleController
 			WHERE article.art_sSlug='$slug'",$slug);
 
 		if(!empty($articleQuery))
-			$article = $this->articleBuilder($articleQuery);
+			$article = $this->entityBuilder($articleQuery);
 
 		return $article;
 	}
 
+	/**
+	 * Create a new entity Article App\Model\Article in bdd
+	 * return Article Object
+	 * @param array $post An array POST
+	 * @param array $user Get User session
+	 */
 	public function addArticleAction($post, $user)
 	{
+
+		if (!empty($user)) {
+			trigger_error("Merci de vous connecter pour accéder à ce service.");
+		}
+
 		$userId = $user['user']['id'];
 		$user = new User();
 		$user->set_id($userId);
@@ -108,42 +140,64 @@ class ArticleController
 		return $article;
 	}
 
-	public function searchArticlesByKeyWord($keyWord)
+	/**
+	 * Search entities Articles App\Model\Article
+	 * return array Article Objects
+	 * @param null|string $keyWord A string with keyWord name by POST method
+	 * @param null|int $limit The number of Article in loop
+	 */
+	public function searchArticlesByKeyWord($keyWord=null, $limit=null)
 	{
 
 		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
-			SELECT * FROM article 
-			LEFT JOIN user ON article.usr_id=user.usr_id 
+			SELECT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_bAdmin, user.usr_bActif,user.usr_sAvatar
+			FROM article 
+			LEFT JOIN user ON article.usr_id=user.usr_id
 			WHERE CONCAT(article.art_sTitre, article.art_sContenu,article.art_dDateCreation,article.art_sSlug) 
 			LIKE :keyWord
+			LIMIT $limit
 			", $keyWord);
 
 		$listArticle = [];
 		foreach ($articlesQuery as $row){
-			$listArticle[] = $this->articleBuilder($row);
+			$listArticle[] = $this->entityBuilder($row);
 		}
 
 		return $listArticle;
 	}
-	public function searchArticlesByCategorie($keyWord)
+
+	/**
+	 * Search entities Articles App\Model\Article within Categories
+	 * return array Article Objects
+	 * @param null|string $keyWord A string with keyWord name by GET method
+	 * @param null|int $limit The number of Article in loop
+	 */
+	public function searchArticlesByCategorie($keyWord=null, $limit = null)
 	{
 
 		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
-			SELECT * FROM article 
+			SELECT DISTINCT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_bAdmin, user.usr_bActif,user.usr_sAvatar 
+			FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id 
 			LEFT JOIN join_article_categorie ON join_article_categorie.art_id=article.art_id 
 			LEFT JOIN categorie ON categorie.cat_id=join_article_categorie.cat_id 
 			LIKE categorie.cat_sNom=:keyWord
+			LIMIT $limit
 			", $keyWord);
 
 		$listArticle = [];
 		foreach ($articlesQuery as $row){
-			$listArticle[] = $this->articleBuilder($row);
+			$listArticle[] = $this->entityBuilder($row);
 		}
 
 		return $listArticle;
 	}
 
+
+	/**
+	 * Get entities Categorie App\Model\Categorie within Categories
+	 * return array Categorie Objects
+	 */
 	public function findCategorieArticleAction()
 	{
 		$queryCategories = $this->getDbRequest()->queryAll('
@@ -153,13 +207,20 @@ class ArticleController
 
 		$listCategories = [];
 		foreach ($queryCategories as $row){
-			$listCategories[] = $this->categoryBuilder($row);
+			$listCategories[] = $this->categoryBuilder->entityBuilder($row);
 		}
 
 		return $listCategories;
 
 	}
 
+
+
+	/**
+	 * Categorie(s) builder App\Model\Categorie
+	 * return array Categorie Objects
+	 *@ 
+	 *
 	private function categoryBuilder($row){
 		$categorie = new Categorie();
 		$categorie->set_id($row->{'cat_id'});
@@ -170,16 +231,28 @@ class ArticleController
 		$categorie->set_sCodeHexa($row->{'cat_sCodeHexa'});
 
 		return $categorie;
-	}
-		
+	} 
+	*/
 
-	private function articleBuilder($row)
+
+
+
+	/**
+	 * use Interface InterfaceController
+	 * Set entities Article App\Model\Article
+	 * return array Objects
+	 * @param string $entity 
+	 */	
+	public function entityBuilder($row)
 	{
 			$article = new Article();
 			$article->set_Id($row->{'art_id'});
 
 			if (!empty($row->{'usr_id'})) {
-				$author = new User();
+
+				$author = $this->userBuilder->entityBuilder($row);
+
+				/*$author = new User();
 				$author->set_id($row->{'usr_id'});
 				$author->set_sNom($row->{'usr_sNom'});
 				$author->set_sPrenom($row->{'usr_sPrenom'});
@@ -187,6 +260,7 @@ class ArticleController
 				$author->set_bActif($row->{'usr_bActif'});
 				$author->set_bAdmin($row->{'usr_bAdmin'});
 				$author->set_sAvatar($row->{'usr_sAvatar'});
+				*/
 				$article->set_iAuteurId($author);
 			}
 			
@@ -197,16 +271,15 @@ class ArticleController
 			$article->set_bActif($row->{'art_bActif'});
 			$article->set_sSlug($row->{'art_sSlug'});
 
-			$categoryQuery = $this->getDbRequest()->findById("
-				SELECT * FROM categorie,join_article_categorie
-				WHERE join_article_categorie.art_id=:id 
-				AND join_article_categorie.cat_id=categorie.cat_id
-			", $article->get_Id());
+			$reqCategorieJoin = $this->getDbRequest()->queryJoinCategoriesByArticle($article->get_Id());
 
-			if (!empty($categoryQuery)) {
+			if (!empty($reqCategorieJoin)) {
 				$articleCategories = array();
-				foreach ($categoryQuery as $row){
-					$categories = $this->categoryBuilder($row);
+				foreach ($reqCategorieJoin as $row){
+
+					$categories = $this->categoryBuilder->entityBuilder($row);
+
+					//$categories = $this->categoryBuilder($row);
 					$articleCategories[] = $categories;
 				}
 				$article->set_aCategories($articleCategories);

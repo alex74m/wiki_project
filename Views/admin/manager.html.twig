@@ -4,7 +4,8 @@
 
 {% block body %}
 
-              {% if app_session_user is defined %}
+
+            {% if app_session_user is not null %}
                  {% if app_session_user.role == 1 %}
  
                     <h1>Interface d'administration</h1>
@@ -33,7 +34,11 @@
                     </div>
                 </div>
                 </div>
+                {% else %}
+                    Vous n'avez pas les droits nécessaires
                 {% endif %}
+                {% else %}
+                    Vous n'êtes pas connecté!
               {% endif %}
 
 

@@ -1,5 +1,4 @@
 <?php
-var_dump($search);
 
 if ($page == 'home') {
 	$listArticles = $articleController->indexAction('DESC', 30);
@@ -78,7 +77,10 @@ elseif ($page == 'article' & $action == 'view' & $slug != null) {
 	$article = $articleController->viewArticleAction($slug);
 
 	$template = $twig->load('core/article.html.twig');
-	echo $template->render(array('article' => $article));
+	echo $template->render(array(
+		'article' => $article,
+		'app_session_user' => $app_session_user
+	));
 }
 elseif ($page == 'article' & $action == 'add') {
 
@@ -112,13 +114,14 @@ elseif ($page == 'article' & $action == 'add') {
 			'app_session_user' => $app_session_user
 		));
 	}
-}
-elseif ($page == 'search' & $action != null) {
+}// Recherche via les liens catégories
+elseif ($page == 'search' & !empty($_GET['action']) & empty($_POST)) {
 
-	if (!empty($action)) 
+	$keyWordSearch = htmlentities($_GET['action']);
+	if (!empty($keyWordSearch)) 
 	{
-		$keyWord = $action;
-		$listArticles = $articleController->searchArticlesByCategorie($keyWord);
+		$limit = 30;
+		$listArticles = $articleController->searchArticlesByCategorie($keyWordSearch, $limit);
 
 		$template = $twig->load('core/index.html.twig');
 		echo $template->render(array(
@@ -128,15 +131,18 @@ elseif ($page == 'search' & $action != null) {
 
 	}else{
 		$template = $twig->load('core/search.html.twig');
-		echo $template->render();		
+		echo $template->render(array(
+			'app_session_user' => $app_session_user
+		));		
 	}
-}
-elseif ($page == 'search' & $search == null) {
+}// Recherche via le formulaire
+elseif ($page == 'search' & empty($_GET['search']) & isset($_POST)) {
 
 	if (!empty($_POST)) 
 	{
 		$keyWord = htmlentities($_POST['_search']);
-		$listArticles = $articleController->searchArticlesByKeyWord($keyWord);
+		$limit = 30;
+		$listArticles = $articleController->searchArticlesByKeyWord($keyWord, $limit);
 	
 		$template = $twig->load('core/index.html.twig');
 		echo $template->render(array(
