@@ -10,7 +10,7 @@ use \App\Model\Article;
 use \App\Model\User;
 use \App\Model\Categorie;
 use \App\Services\Slug;
-
+use \App\Form\ArticleAddForm;
 
 /**
 * @ArticleController
@@ -28,7 +28,7 @@ class ArticleController implements InterfaceController
 		$this->userBuilder = new UserController($dbRequest);
 	}
 	/**
-	 * Get the entity repository App\Repository\dBrequest
+	 * Get the entity repository App\Repository\DbRequest
 	 * return PDO Object
 	 */
 	public function getDbRequest(){
@@ -82,62 +82,72 @@ class ArticleController implements InterfaceController
 	 */
 	public function addArticleAction($post, $user)
 	{
-
-		if (!empty($user)) {
+		if (empty($user)) {
 			trigger_error("Merci de vous connecter pour accéder à ce service.");
+			return false;
 		}
 
-		$userId = $user['user']['id'];
-		$user = new User();
-		$user->set_id($userId);
+		$articleAddForm = new ArticleAddForm();
+		$isValid = $articleAddForm->builderFormValidator($post);
+		if ($isValid === true)
+		{
+
+			$userId = $user['user']['id'];
+			$user = new User();
+			$user->set_id($userId);
 
 
-		$slugName = Slug::slugify($post['_sTitre']);
-		$checkSlug = $this->getDbRequest()->checkField('article', 'art_sSlug', $slugName);
-		if ($checkSlug === false) {
-			$slugName = Slug::createSlug($post['_sTitre']);
-		}
+			$slugName = Slug::slugify($post['_sTitre']);
+			$checkSlug = $this->getDbRequest()->checkField('article', 'art_sSlug', $slugName);
+			if ($checkSlug === false) {
+				$slugName = Slug::createSlug($post['_sTitre']);
+			}
 
-		$article = new Article();
-		$article->set_iAuteurId($user);
-		$article->set_sTitre($post['_sTitre']);
-		$article->set_sContenu($post['_sContenu']);
-		$article->set_bActif(0);
-		$article->set_sSlug($slugName);
-	
-		$params = array(
-			':usr_id' => $article->get_iAuteurId()->get_id(),
-			':art_sTitre' => $article->get_sTitre(),
-			':art_sContenu' => $article->get_sContenu(),
-			':art_sSlug' => $slugName
-
-		);
-
+			$article = new Article();
+			$article->set_iAuteurId($user);
+			$article->set_sTitre($post['_sTitre']);
+			$article->set_sContenu($post['_sContenu']);
+			$article->set_bActif(0);
+			$article->set_sSlug($slugName);
 		
-		$insertNewArticle = $this->getDbRequest()->insert("
-			INSERT INTO article (usr_id, art_sTitre, art_sContenu, art_dDateCreation, art_sSlug)
-			VALUES (:usr_id, :art_sTitre, :art_sContenu, NOW(), :art_sSlug)
-		",$params);
-		
+			$params = array(
+				':usr_id' => $article->get_iAuteurId()->get_id(),
+				':art_sTitre' => $article->get_sTitre(),
+				':art_sContenu' => $article->get_sContenu(),
+				':art_sSlug' => $slugName
+			);
 
-		foreach ($post as $key => $value) {
-			$keyName = explode('_', $key);
-			$keyName = $keyName[0];
-			if ($keyName === 'categorie') {
-				$checkCategorie =$this->getDbRequest()->checkField('categorie', 'cat_id', $value);
-				if ($checkCategorie === false) {
-					$params = array(
-						'art_id' => $insertNewArticle,
-						'cat_id' => $value
-					);
-					$this->getDbRequest()->insert("
-						INSERT INTO join_article_categorie (art_id, cat_id)
-						VALUES (:art_id, :cat_id)
-					", $params);
+			
+			$insertNewArticle = $this->getDbRequest()->insert("
+				INSERT INTO article (usr_id, art_sTitre, art_sContenu, art_dDateCreation, art_sSlug)
+				VALUES (:usr_id, :art_sTitre, :art_sContenu, NOW(), :art_sSlug)
+			",$params);
+			
+
+			foreach ($post as $key => $value) {
+				$keyName = explode('_', $key);
+				$keyName = $keyName[0];
+				if ($keyName === 'categorie') {
+					$checkCategorie =$this->getDbRequest()->checkField('categorie', 'cat_id', $value);
+					if ($checkCategorie === false) {
+						$params = array(
+							'art_id' => $insertNewArticle,
+							'cat_id' => $value
+						);
+						$this->getDbRequest()->insert("
+							INSERT INTO join_article_categorie (art_id, cat_id)
+							VALUES (:art_id, :cat_id)
+						", $params);
+					}
 				}
 			}
+			return $article;
+
+		}else{
+			return false;
 		}
-		return $article;
+
+	
 	}
 
 	/**

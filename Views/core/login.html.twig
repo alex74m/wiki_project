@@ -5,9 +5,15 @@
 {% block body %}
 
 <h1>Formulaire de connexion </h1>
+
+{% if flashMessage is defined %}
+    <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
+    <hr>
+{% endif %}
+
 <form method="post" action="?page=login" >
-	<input type="text" name="_sMail" placeholder="Votre e-mail"  required="required"/>
-	<input type="password" name="_sPwd" placeholder="*******"  required="required"/>
+	<input type="text" name="_sMail" placeholder="Votre e-mail" required="required" value="{% if datasForm %}{{datasForm._sMail}}{% endif %}"/>
+	<input type="password" name="_sPwd" placeholder="*******" required="required"/>
 	<input type="submit" class="btn btn-primary" value="Connexion" name="userConnexion"/>
 </form>
 

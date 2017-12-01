@@ -6,15 +6,24 @@
 
 {% block body %}
 
+{% if flashMessage is defined %}
+    <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
+    <hr>
+{% endif %}
+
     <form method="post" action="?page=article&action=add">
-		<input type="text" name="_sTitre" placeholder="Ajouter un titre" required="required"><br>
-		<textarea name="_sContenu" placeholder="Ajouter un contenu" rows="20px" cols="50px" required="required"></textarea> <br>
+		<input type="text" name="_sTitre" placeholder="Ajouter un titre" required="required" value="{% if datasForm %}{{datasForm._sTitre}}{% endif %}"><br>
+		<textarea name="_sContenu" placeholder="Ajouter un contenu" rows="20px" cols="50px" required="required">{% if datasForm %}{{datasForm._sContenu}}{% endif %}</textarea> <br>
 		<div id="checkboxCategorie">
 			{% for categorie in listCategories %}
 				<div class="checkboxChoice">
 	    			<input type="checkbox" id="categorie" name="categorie_{{categorie._id}}" value="{{categorie._id}}">
 	    			<label for="categorie">{{categorie._sNom}}</label>
-	    			<span class="categorie" style="color:{{categorie._sCodeHexa}}"><i class="glyphicon glyphicon-info-sign resumeCategorie"> {{categorie._sResume}}</i></span>
+	    			<a href="#" data-toggle="popover" data-content="{{categorie._sResume}}">
+	    				<span class="categorie" style="color:{{categorie._sCodeHexa}}"> 
+	    					<i class="glyphicon glyphicon-info-sign resumeCategorie"></i>
+	    				</span>
+	    			</a>
 				</div>			    
 			{% endfor %}
 

@@ -11,35 +11,47 @@ if ($page == 'home') {
 }
 elseif ($page == 'inscription') {
 
-	if (empty($_SESSION['user']) & empty($_POST['userInscription'])) {
+	if (empty($_SESSION['user']) & empty($_POST)) {
 		$template = $twig->load('core/inscription.html.twig');
 		echo $template->render(array(
 			'app_session_user' => $app_session_user
 		));
-
 	}
-	elseif (empty($_SESSION['user']) & !empty($_POST['userInscription'])) {
+	elseif (empty($_SESSION['user']) & !empty($_POST)) {
 
 		$datasUser = $_POST;
 		$validAddUser = $userController->addUserInscription($datasUser);
 
-		if ($validAddUser == false) {
-			$flashMessage = 'Nous avons rencontrer un problème. Veuillez réessayer svp.';
+		if ($validAddUser === false) {
+			$flashMessage = 'Nous avons rencontré un problème. Veuillez réessayer svp.';
 			$flashName = 'danger';
+			$template = $twig->load('core/inscription.html.twig');
+			echo $template->render(array(
+				'datasForm' => $_POST,
+				'app_session_user' => $app_session_user,
+				'flashMessage' => $flashMessage,
+				'flashName' =>$flashName
+			));
 		}
-
-		$flashMessage = 'Vous êtes bien inscrit. Veuillez vous connecter pour vous identifier.';
-		$flashName = 'success';
-
-		header('Location: login');
-
+		elseif ($validAddUser === true) {
+			$flashMessage = 'Vous êtes bien inscrit. Veuillez vous connecter pour vous identifier.';
+			$flashName = 'success';
+			$template = $twig->load('core/login.html.twig');
+			echo $template->render(array(
+				'app_session_user' => $app_session_user,
+				'flashMessage' => $flashMessage,
+				'flashName' =>$flashName
+			));
+		}else{
+			header('Location: inscription');
+		}
 	}else{
 		header('Location: home');
 	}
 }
 elseif ($page == 'login') {
 
-	if (empty($_SESSION['user']) & empty($_POST['userConnexion']))
+	if (empty($_SESSION['user']) & empty($_POST))
 	{
 		$template = $twig->load('core/login.html.twig');
 		echo $template->render(array(
@@ -47,25 +59,21 @@ elseif ($page == 'login') {
 		));
 
 	}
-	elseif (empty($_SESSION['user']) & !empty($_POST['userConnexion']))
+	elseif (empty($_SESSION['user']) & !empty($_POST))
 	{
-
 		$userConnection = $userController->connexionUser($_POST);
-
 		if ($userConnection === true) {
 			header('Location: home');
 		}
-		else{
-			$flashMessage = "Votre compte est désactivé!";
-			$flashName = "danger";
-			$listArticles = $articleController->indexAction('DESC', 30);
-			$template = $twig->load('core/index.html.twig');
+		elseif ($userConnection === false) {
+			$template = $twig->load('core/login.html.twig');
 			echo $template->render(array(
-				'listArticles' => $listArticles,
-				'app_session_user' => $app_session_user,
-				'flashMessage' => $flashMessage,
-				'flashName' =>$flashName
+				'datasForm' => $_POST,
+				'app_session_user' => $app_session_user
 			));
+		}
+		else{
+			header('Location: home');
 		}
 
 	}else{
@@ -100,7 +108,7 @@ elseif ($page == 'admin' & ($action == 'inactivationUser' || $action == 'activat
 			'flashName' => $flashName
 		));
 }
-elseif ($page == 'admin') {
+elseif ($page == 'admin' & $action == null) {
 
 		if ($app_session_user['role'] != 1) {
 			trigger_error("Vous devez être administrateur.");
@@ -141,9 +149,23 @@ elseif ($page == 'article' & $action == 'add') {
 		
 		$newArticle = $articleController->addArticleAction($_POST,$_SESSION);
 
-		//Affichage de l'article via son Slug
-		$data = $newArticle->get_sSlug();
-		header("Location: article/view/$data");
+		if ($newArticle === false) {
+			$flashMessage = 'Nous avons rencontré un problème. Veuillez réessayer svp.';
+			$flashName = 'danger';
+			$listCategories = $articleController->findCategorieArticleAction();
+			$template = $twig->load('core/add_article.html.twig');
+			echo $template->render(array(
+				'datasForm' => $_POST,
+				'listCategories' => $listCategories,
+				'app_session_user' => $app_session_user,
+				'flashMessage' => $flashMessage,
+				'flashName' =>$flashName
+			));
+		}else{
+			//Affichage de l'article via son Slug
+			$data = $newArticle->get_sSlug();
+			header("Location: article/view/$data");
+		}
 
 	}
 	else{
@@ -161,7 +183,8 @@ elseif ($page == 'article' & $action == 'add') {
 }// Recherche via les liens catégories
 elseif ($page == 'search' & !empty($_GET['action']) & empty($_POST)) {
 
-	$keyWordSearch = htmlentities($_GET['action']);
+	$keyWordSearch = $_GET['action'];
+
 	if (!empty($keyWordSearch)) 
 	{
 		$limit = 30;
@@ -172,7 +195,6 @@ elseif ($page == 'search' & !empty($_GET['action']) & empty($_POST)) {
 			'listArticles' => $listArticles,
 			'app_session_user' => $app_session_user
 		));
-
 	}else{
 		$template = $twig->load('core/search.html.twig');
 		echo $template->render(array(
@@ -184,7 +206,7 @@ elseif ($page == 'search' & empty($_GET['search']) & isset($_POST)) {
 
 	if (!empty($_POST)) 
 	{
-		$keyWord = htmlentities($_POST['_search']);
+		$keyWord = $_POST['_search'];
 		$limit = 30;
 		$listArticles = $articleController->searchArticlesByKeyWord($keyWord, $limit);
 	
@@ -196,7 +218,7 @@ elseif ($page == 'search' & empty($_GET['search']) & isset($_POST)) {
 
 	}else{
 		$template = $twig->load('core/search.html.twig');
-		echo $template->render();		
+		echo $template->render(array('app_session_user' => $app_session_user,));		
 	}
 }
 elseif ($page == 'logout') {
@@ -207,7 +229,7 @@ elseif ($page == 'logout') {
 }
 else{
 	$template = $twig->load('error/error404.html.twig');
-	echo $template->render();
+	echo $template->render(array('app_session_user' => $app_session_user,));
 }
 
 ?>

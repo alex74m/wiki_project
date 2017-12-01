@@ -5,12 +5,22 @@
 {% block body %}
 <h1>Formulaire d'inscription</h1>
 
+{% if flashMessage is defined %}
+    <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
+{% endif %}
+
 <form method="post" action="?page=inscription" >
-	<input type="text" name="_sNom" placeholder="Votre Nom" required="required" /><br>
-	<input type="text" name="_sPrenom" placeholder="Votre Prénom" required="required" /><br>
-	<input type="text" name="_sMail" placeholder="Votre e-mail" required="required" /><br>
+	<label>Votre Nom</label><br>
+	<input type="text" name="_sNom" placeholder="Votre Nom" required="required" value="{% if datasForm %}{{datasForm._sNom}}{% endif %}" /><br>
+	<label>Votre Prénom</label><br>
+	<input type="text" name="_sPrenom" placeholder="Votre Prénom" required="required" value="{% if datasForm %}{{datasForm._sPrenom}}{% endif %}" /><br>
+	<label>Votre E-mail</label><br>
+	<input type="text" name="_sMail" placeholder="Votre e-mail" required="required" value="{% if datasForm %}{{datasForm._sMail}}{% endif %}" /><br>
+	<label>Votre mot de passe</label><br>
 	<input type="password" name="_sPwd" placeholder="********" required="required" /><br>
-	<input type="submit" class="btn btn-primary" name="userInscription"/>
+	<label>Confirmer votre mot de passe</label><br>
+	<input type="password" name="_sPwd2" placeholder="********" required="required" /><br>
+	<button type="submit" class="btn btn-primary" name="userInscription">Je m'inscris !</button>
 </form>
 
 {% endblock %}

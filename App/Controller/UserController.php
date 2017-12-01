@@ -10,6 +10,8 @@ use \App\Model\User;
 use \App\Services\Crypt;
 use \App\Services\Token;
 
+use \App\Form\UserInscriptionForm;
+
 
 class UserController implements InterfaceController
 {
@@ -19,66 +21,74 @@ class UserController implements InterfaceController
 		$this->repository = $dbRequest;
 	}
 	/**
-	 * Get the entity repository App\Repository\dBrequest
+	 * Get the entity repository App\Repository\DbRequest
 	 * return PDO Object
 	 */
 	public function getDbRequest(){
 		return $this->repository;
 	}
 
+	/**
+	 * Add a new entity User App\Model\User
+	 * return bool
+	 * @param array $_POST Views\core\inscription.html.twig
+	 */
 	public function addUserInscription($datas)
 	{
-		
-		$mail = $datas['_sMail'];
-		$nom = $datas['_sNom'];
-		$prenom = $datas['_sPrenom'];
+		$userInscriptionForm = new UserInscriptionForm();
+		$isValid = $userInscriptionForm->builderFormValidator($datas);
 
-		if (!filter_var($mail, FILTER_VALIDATE_EMAIL)){
-			trigger_error("Cette e-mail n'est pas valide. Format accepté : exemple@monsite.com.");
-		}
-
-		$psw = $datas['_sPwd'];
-		if (strlen($psw) < 5) {
-			trigger_error("Le mot de passe doit faire minimum 5 caractères!");
-		}
-		$hashPsw = Crypt::crypt($psw);
-		$userToken = Token::createToken();
-
-		$checkMail = $this->getDbRequest()->checkField('user', 'usr_sMail', $mail);
-		if ($checkMail == true)
+		if ($isValid === true)
 		{
-			$params = array(
-				':usr_sNom' => $nom,
-				':usr_sPrenom' => $prenom,
-				':usr_sMail' => $mail,
-				':usr_sPwd' => $hashPsw,
-				':usr_sToken' => $userToken
-			);
+			$mail = $datas['_sMail'];
 
-			$userPreLoading = $this->entityBuilder($params);
-			
-			$insertNewUser = $this->getDbRequest()->insert("
-				INSERT INTO user (usr_sNom, usr_sPrenom, usr_sMail,usr_sPwd, usr_sToken)
-				VALUES (:usr_sNom, :usr_sPrenom, :usr_sMail, :usr_sPwd, :usr_sToken)
-			",$params);
+			$checkMail = $this->getDbRequest()->checkField('user', 'usr_sMail', $mail);
 
+			if ($checkMail == true)
+			{
+				$nom = $datas['_sNom'];
+				$prenom = $datas['_sPrenom'];
+				$psw = $datas['_sPwd'];
+				$psw2 = $datas['_sPwd2'];
+				if ($psw === $psw2) {
+					$hashPsw = Crypt::crypt($psw);
+					$userToken = Token::createToken();
 
+					$params = array(
+						':usr_sNom' => $nom,
+						':usr_sPrenom' => $prenom,
+						':usr_sMail' => $mail,
+						':usr_sPwd' => $hashPsw,
+						':usr_sToken' => $userToken
+					);
+
+					$insertNewUser = $this->getDbRequest()->insert("
+						INSERT INTO user (usr_sNom, usr_sPrenom, usr_sMail,usr_sPwd, usr_sToken)
+						VALUES (:usr_sNom, :usr_sPrenom, :usr_sMail, :usr_sPwd, :usr_sToken)
+					",$params);
+
+					return true;
+				}else{
+					trigger_error("Les mots de passes ne correspondent pas.");			
+				}
+			}else{
+				trigger_error("Cette e-mail n'est pas disponible.");			
+			}
 		}else{
-			trigger_error("Cette e-mail n'est pas disponible.");			
-		}
-
-		if (is_numeric($insertNewUser))
-			return true;
-		else
 			return false;
-
+		}
 	}
-
+	/**
+	 * Create a session within entity User App\Model\User
+	 * return bool
+	 * @param array $_POST Views\core\login.html.twig
+	 */
 	public function connexionUser($datas)
 	{
 	
 		$mail = $datas['_sMail'];
 		$checkMail = $this->getDbRequest()->checkField('user', 'usr_sMail', $mail);
+
 		if ($checkMail == false ) {
 			$infoUser = $this->getDbRequest()->findOne("SELECT * FROM user WHERE usr_sMail=:field", $mail);
 			
@@ -102,17 +112,17 @@ class UserController implements InterfaceController
 					$_SESSION['user']['actif'] = $user->get_bActif();
 					$_SESSION['user']['role'] = $user->get_bAdmin();
 					return true;
-				}
-				else{
+				}else{
 					trigger_error("Votre compte est désactivé!");
+					return false;
 				}
-			}
-			else
-			{
+			}else{
 				trigger_error("Votre mot de passe ou e-mail est incorrect.");
+				return false;
 			}
 		}else{
 			trigger_error("Cette e-mail n'est pas valide.");
+			return false;
 		}
 	}
 	/**
@@ -144,7 +154,7 @@ class UserController implements InterfaceController
 		
 		$checkUser = $this->getDbRequest()->checkField('user', 'usr_id', $idUser);
 
-		if ($checkUser != false) {
+		if($checkUser != false) {
 			trigger_error("Cette utilisateur n'existe pas.");
 		}
 
