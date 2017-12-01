@@ -1,8 +1,30 @@
     body{
       margin-top: 70px;
     }
+    .navbar-fixed-top{
+      background-color: white !important;
+    }
+    ul.navbar-nav li a,
+    a.navbar-brand{
+      color: black !important;
+    }
+    .navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:focus, .navbar-inverse .navbar-nav > .active > a:hover {
+      color: white !important;
+      background-color: #080808;
+    }
+    ul.navbar-nav li a:hover,
+    a.navbar-brand:hover{
+      color: #0a2c74 !important;
+    }
+    a.smart-menu{
+      color: black !important;
+    }
+    a.smart-menu:hover{
+      color: #0a2c74 !important;
+    }
     span.alert{
       padding: 2px !important;
+      border-radius: none !important;
     }
     #connect{
       margin-top: 10px !important;
@@ -10,7 +32,23 @@
     span.btn-info{
       margin: 0 5px 0 5px !important;
       padding: 4px;
-      border-radius: 4px;
+      border-radius: none !important;
+    }
+    span.btn-info a{
+      color: black !important;
+    }
+    span.btn-info a:hover{
+      color: #0a2c74 !important;
+    }
+    span.alert-info{
+      background-color: white;
+      color: black;
+      margin: 0 5px 0 5px !important;
+      padding: 4px;
+      border-radius: none !important;
+    }
+    span.alert-info a{
+      color: #0a2c74 !important;
     }
     span.btn-info a{
       color: white;
@@ -22,4 +60,17 @@
     }
     div.search{
       margin-top: 7px !important;
+    }
+    .btn{
+      border-radius: none !important;
+      color: white;
+      background-color: black;
+      border-color: white;
+    }
+    .btn:hover{
+      transition: 1s all;
+      border-radius: none !important;
+      color: black;
+      background-color: white;
+      border-color: black;
     }

@@ -8,29 +8,75 @@
             {% if app_session_user is not null %}
                  {% if app_session_user.role == 1 %}
  
-                    <h1>Interface d'administration</h1>
-
+                    <h1>Espace d'administration</h1>
+            <p>
+                {% if flashMessage is defined %}
+                    <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
+                {% endif %}
+            </p>
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#tab1default" data-toggle="tab">Liste des users</a></li>
                             <li><a href="#tab2default" data-toggle="tab">Liste des articles</a></li>
                             <li><a href="#tab3default" data-toggle="tab">Articles à valider</a></li>
+                            <li><a href="#tab4default" data-toggle="tab">Ajouter des catégories</a></li>
                             <li class="dropdown">
                                 <a href="#" data-toggle="dropdown">Mon compte <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#tab4default" data-toggle="tab">Mes infomations</a></li>
+                                    <li><a href="#tab5default" data-toggle="tab">Mes infomations</a></li>
                                 </ul>
                             </li>
                         </ul>
                 </div>
                 <div class="panel-body">
                     <div class="tab-content">
-                        <div class="tab-pane fade in active" id="tab1default">A coder</div>
+                        <div class="tab-pane fade in active" id="tab1default">
+
+
+                            <div class="table-responsive">          
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th>Modifier</th>
+                                    <th>Désactiver</th>
+                                    <th>Role</th>
+                                    <th>Id</th>
+                                    <th>Firstname</th>
+                                    <th>Lastname</th>
+                                    <th>Email</th>
+                                    <th>Token</th>
+                                    <th>Actif</th>
+                                    <th>Avatar</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                            {% for user in listUsers %}
+                               <tr>
+                                    <td><a href="admin/updateUser/{{user._id}}" class="btn btn-info"><span class="glyphicon glyphicon-refresh"></span> Modifier</a></td>
+                                    <td><a href="admin/{% if user._bActif == 1 %}{{'inactivationUser'}}{%else%}{{'activationUser'}}{% endif %}/{{user._id}}" class="btn btn-danger"  onclick="return confirm('Êtes-vous sûr de votre choix ?')"><span class="glyphicon glyphicon-{% if user._bActif == 1 %}{{'floppy-remove'}}{%else%}{{'floppy-saved'}}{% endif %}"></span> {% if user._bActif == 1 %}{{'Désactiver'}}{%else%}{{'Activer'}}{% endif %}</a></td>
+                                    <td>{% if user._bAdmin == 1 %}{{'Admin'}}{% else %}{{'User'}}{% endif %}</td>
+                                    <td>{{user._id}}</td>
+                                    <td>{{user._sNom}}</td>
+                                    <td>{{user._sPrenom}}</td>
+                                    <td>{{user._sMail}}</td>
+                                    <td>{{user._sToken}}</td>
+                                    <td>{{user._bActif}}</td>
+                                    
+                                    <td>{{user._bAvatar}}</td>
+                                  </tr>
+                            {% endfor %}                                    
+       
+                                </tbody>
+                              </table>
+                              </div>
+
+                        </div>
                         <div class="tab-pane fade" id="tab2default">A coder</div>
                         <div class="tab-pane fade" id="tab3default">A coder</div>
                         <div class="tab-pane fade" id="tab4default">A coder</div>
                         <div class="tab-pane fade" id="tab5default">A coder</div>
+
                     </div>
                 </div>
                 </div>

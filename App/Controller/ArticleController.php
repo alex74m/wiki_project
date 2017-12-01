@@ -63,7 +63,7 @@ class ArticleController implements InterfaceController
 	 */
 	public function viewArticleAction($slug)
 	{
-		$articleQuery = $this->getDbRequest()->findOneBySlug("
+		$articleQuery = $this->getDbRequest()->findOneByData("
 			SELECT * FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id 
 			WHERE article.art_sSlug='$slug'",$slug);
@@ -150,7 +150,7 @@ class ArticleController implements InterfaceController
 	{
 
 		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
-			SELECT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_bAdmin, user.usr_bActif,user.usr_sAvatar
+			SELECT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_bAdmin,user.usr_sToken, user.usr_bActif,user.usr_sAvatar
 			FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id
 			WHERE CONCAT(article.art_sTitre, article.art_sContenu,article.art_dDateCreation,article.art_sSlug) 
@@ -176,7 +176,7 @@ class ArticleController implements InterfaceController
 	{
 
 		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
-			SELECT DISTINCT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_bAdmin, user.usr_bActif,user.usr_sAvatar 
+			SELECT DISTINCT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_sToken,user.usr_bAdmin, user.usr_bActif,user.usr_sAvatar 
 			FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id 
 			LEFT JOIN join_article_categorie ON join_article_categorie.art_id=article.art_id 

@@ -45,6 +45,10 @@ class Article {
 	}
 	
 	public function set_sTitre($sTitre){
+		$lengthTitre = strlen($sTitre);
+		if ($lengthTitre == 0 || $lengthTitre > 250) {
+			trigger_error("Le titre doit faire moins de 250 caractères.");
+		}
 	 	$this->sTitre = $sTitre;
 	}
 	

@@ -49,15 +49,15 @@ if (isset($_GET['page'])) {
 }else{
 	$page = 'home';
 }
-if (isset($_GET['slug'])) {
-	$slug = htmlentities($_GET['slug']);
-}else{
-	$slug = null;
-}
 if (isset($_GET['action'])) {
 	$action = htmlentities($_GET['action']);
 }else{
 	$action = null;
+}
+if (isset($_GET['data'])) {
+	$data = htmlentities($_GET['data']);
+}else{
+	$data = null;
 }
 if (isset($_SESSION['user'])) {
 	$app_session_user = $_SESSION['user'];

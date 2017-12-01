@@ -51,10 +51,10 @@ class DbRequest
 		return $datas;
 	}
 
-	public function findOneBySlug($sqlRequest, $slug)
+	public function findOneByData($sqlRequest, $data)
 	{
 		$req = $this->getDb()->prepare($sqlRequest);
-		$req->bindValue(':slug', $slug, PDO::PARAM_INT);
+		$req->bindValue(':data', $data, PDO::PARAM_INT);
 		$req->execute();
 		$datas = $req->fetch(PDO::FETCH_OBJ);
 		$req->closeCursor();
@@ -102,5 +102,12 @@ class DbRequest
 		$req->closeCursor();
 
 		return $datas;
+	}
+
+
+	public function updateByOneField($sqlRequest, $field){
+
+		$req = $this->getDb()->prepare($sqlRequest);
+		$req->execute(array(':field'=> $field));
 	}
 }

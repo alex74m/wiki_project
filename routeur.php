@@ -1,5 +1,6 @@
 <?php
 
+
 if ($page == 'home') {
 	$listArticles = $articleController->indexAction('DESC', 30);
 	$template = $twig->load('core/index.html.twig');
@@ -38,43 +39,86 @@ elseif ($page == 'inscription') {
 }
 elseif ($page == 'login') {
 
-	if (empty($_SESSION['user']) & empty($_POST['userConnexion'])) {
+	if (empty($_SESSION['user']) & empty($_POST['userConnexion']))
+	{
 		$template = $twig->load('core/login.html.twig');
 		echo $template->render(array(
 			'app_session_user' => $app_session_user
 		));
 
 	}
-	elseif (empty($_SESSION['user']) & !empty($_POST['userConnexion'])) {
+	elseif (empty($_SESSION['user']) & !empty($_POST['userConnexion']))
+	{
 
-		$user = $userController->connexionUser($_POST);
+		$userConnection = $userController->connexionUser($_POST);
 
-		if (!is_object($user) & !empty($user)) {
-			trigger_error("L'user doit être de type object.");
+		if ($userConnection === true) {
+			header('Location: home');
+		}
+		else{
+			$flashMessage = "Votre compte est désactivé!";
+			$flashName = "danger";
+			$listArticles = $articleController->indexAction('DESC', 30);
+			$template = $twig->load('core/index.html.twig');
+			echo $template->render(array(
+				'listArticles' => $listArticles,
+				'app_session_user' => $app_session_user,
+				'flashMessage' => $flashMessage,
+				'flashName' =>$flashName
+			));
 		}
 
-		$_SESSION['user']['id'] = $user->get_id();
-		$_SESSION['user']['nom'] = $user->get_sNom();
-		$_SESSION['user']['prenom'] = $user->get_sPrenom();
-		$_SESSION['user']['mail'] = $user->get_sMail();
-		$_SESSION['user']['role'] = $user->get_bAdmin();
-
-		header('Location: home');
-
-	}elseif (!empty($_SESSION['user'])) {
+	}else{
 		header('Location: home');
 	}
 }
-elseif ($page == 'admin') {
+elseif ($page == 'admin' & ($action == 'inactivationUser' || $action == 'activationUser') & $data != null) {
+		if ($app_session_user['role'] != 1) {
+			trigger_error("Vous devez être administrateur.");
+		}
+		$idUser = (int)$data;
+		if ($action == 'inactivationUser') {
+			$userController->inactivationUser($idUser);
+			$flashMessage = "L'utilisateur a bien été désactivé.";
+			$flashName = "success";
+		}
+		if ($action == 'activationUser') {
+			$userController->activationUser($idUser);
+			$flashMessage = "L'utilisateur a bien été activé.";
+			$flashName = "success";
+		}
+		
+		$listUsers = $userController->queryAllUser();
+		$listArticles = $articleController->indexAction('DESC', 100);
 
 		$template = $twig->load('admin/manager.html.twig');
 		echo $template->render(array(
-		'app_session_user' => $app_session_user
+			'listArticles' => $listArticles,
+			'listUsers' => $listUsers,
+			'app_session_user' => $app_session_user,
+			'flashMessage' => $flashMessage,
+			'flashName' => $flashName
 		));
 }
-elseif ($page == 'article' & $action == 'view' & $slug != null) {
+elseif ($page == 'admin') {
 
-	$article = $articleController->viewArticleAction($slug);
+		if ($app_session_user['role'] != 1) {
+			trigger_error("Vous devez être administrateur.");
+		}
+
+		$listUsers = $userController->queryAllUser();
+		$listArticles = $articleController->indexAction('DESC', 100);
+
+		$template = $twig->load('admin/manager.html.twig');
+		echo $template->render(array(
+			'listArticles' => $listArticles,
+			'listUsers' => $listUsers,
+			'app_session_user' => $app_session_user
+		));
+}
+elseif ($page == 'article' & $action == 'view' & $data != null) {
+
+	$article = $articleController->viewArticleAction($data);
 
 	$template = $twig->load('core/article.html.twig');
 	echo $template->render(array(
@@ -98,8 +142,8 @@ elseif ($page == 'article' & $action == 'add') {
 		$newArticle = $articleController->addArticleAction($_POST,$_SESSION);
 
 		//Affichage de l'article via son Slug
-		$slug = $newArticle->get_sSlug();
-		header("Location: article/view/$slug");
+		$data = $newArticle->get_sSlug();
+		header("Location: article/view/$data");
 
 	}
 	else{

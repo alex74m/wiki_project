@@ -8,24 +8,28 @@
     <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
 {% endif %}
 <br><br>
-     <div id="body" class="col-lg-12">
+     <div class="col-lg-12">
         {% for article in listArticles %}
 
         	<div class="col-md-4">
-                <h2>{{ article._sTitre }}</h2> <cite>By {{ article._iAuteurId._sNom }}</cite>
+                <h3>{{ article._sTitre }}</h3> <cite>By {{ article._iAuteurId._sNom }}</cite>
                 <p> {{ article._sContenu|truncate(20, true) }}</p>
                 <div>
-                    <div class="more label"><a href="article/view/{{article._sSlug}}">En savoir +</a></div> 
+                    <div><a href="article/view/{{article._sSlug}}">En savoir +</a></div> 
                     <div class="tags">
-                    <h4>Tags <span class="glyphicon glyphicon-tag"></span></h4>
+                    <h5>Catégorie(s) <span class="glyphicon glyphicon-tag"></span></h5>
             {% for category in article._aCategories %}
                 <span class="btn-info" style="background-color:{{ category._sCodeHexa }}">
                     <a href="search/{{ category._sNom|lower }}">{{ category._sNom }}</a>
                 </span>
+            {% else %}
+            Pas de catgorie.
             {% endfor %}
                     </div>    
                 </div> 
             </div>
+        {% else %}
+            Pas d'article(s) trouvé(s)
         {% endfor %}
 	</div>
 {% endblock %}

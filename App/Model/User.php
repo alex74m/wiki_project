@@ -30,15 +30,31 @@ class User
 		$this->id = $id;
 	}
 	public function set_sNom($sNom){
+		$lengthNom = strlen($sNom);
+		if ($lengthNom == 0 || $lengthNom > 250) {
+			trigger_error("Le nom doit faire moins de 250 caractères.");
+		}
 		$this->sNom = $sNom;
 	}
 	public function set_sPrenom($sPrenom){
+		$lengthPrenom = strlen($sPrenom);
+		if ($lengthPrenom == 0 || $lengthPrenom > 250) {
+			trigger_error("Le prenom doit faire moins de 250 caractères.");
+		}
 		$this->sPrenom = $sPrenom;
 	}
 	public function set_sMail($sMail){
+		$lengthMail = strlen($sMail);
+		if ($lengthMail == 0 || $lengthMail > 250) {
+			trigger_error("Le mail doit faire moins de 250 caractères.");
+		}
 		$this->sMail = $sMail;
 	}
 	public function set_sPwd($sPwd){
+		$lengthPwd = strlen($sPwd);
+		if ($lengthPwd == 0 || $lengthPwd > 250) {
+			trigger_error("Le mot de passe doit faire moins de 250 caractères.");
+		}
 		$this->sPwd = $sPwd;
 	}
 	public function set_sToken($sToken){
