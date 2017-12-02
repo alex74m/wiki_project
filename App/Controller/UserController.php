@@ -69,10 +69,12 @@ class UserController implements InterfaceController
 
 					return true;
 				}else{
-					trigger_error("Les mots de passes ne correspondent pas.");			
+					trigger_error("Les mots de passes ne correspondent pas.");
+					return false;		
 				}
 			}else{
-				trigger_error("Cette e-mail n'est pas disponible.");			
+				trigger_error("Cette e-mail n'est pas disponible.");
+				return false;		
 			}
 		}else{
 			return false;
@@ -188,7 +190,7 @@ class UserController implements InterfaceController
 	 * return array Objects
 	 * @param string $row 
 	 */
-	public function entityBuilder($row)
+	final function entityBuilder($row)
 	{
 		$user = new User();
 		$user->set_id($row->{'usr_id'}) ?? null;

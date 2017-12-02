@@ -13,8 +13,8 @@ use \App\Services\Slug;
 use \App\Form\ArticleAddForm;
 
 /**
-* @ArticleController
-*/
+ * @ArticleController
+ */
 class ArticleController implements InterfaceController
 {
 
@@ -27,6 +27,7 @@ class ArticleController implements InterfaceController
 		$this->categoryBuilder = new CategorieController($dbRequest);
 		$this->userBuilder = new UserController($dbRequest);
 	}
+
 	/**
 	 * Get the entity repository App\Repository\DbRequest
 	 * return PDO Object
@@ -37,7 +38,7 @@ class ArticleController implements InterfaceController
 
 	/**
 	 * Get entities Article App\Model\Article
-	 * return array Article Objects
+	 * return array [Articles Objects]
 	 * @param string $order Set the order of Articles - Homepage (index.php)
 	 * @param null|int $limit The number of Article in loop
 	 */
@@ -59,7 +60,7 @@ class ArticleController implements InterfaceController
 	/**
 	 * Get entity Article App\Model\Article
 	 * return Article Object
-	 * @param string $slug A string with slug name
+	 * @param string $slug A string within article slug name
 	 */
 	public function viewArticleAction($slug)
 	{
@@ -70,39 +71,51 @@ class ArticleController implements InterfaceController
 
 		if(!empty($articleQuery))
 			$article = $this->entityBuilder($articleQuery);
+		else
+			$article = null;
 
 		return $article;
 	}
 
 	/**
 	 * Create a new entity Article App\Model\Article in bdd
-	 * return Article Object
+	 * return Article Object || bool([false] if error)
 	 * @param array $post An array POST
 	 * @param array $user Get User session
 	 */
 	public function addArticleAction($post, $user)
 	{
 		if (empty($user)) {
-			trigger_error("Merci de vous connecter pour accéder à ce service.");
+			throw new Exception("Merci de vous connecter pour accéder à ce service.", 1);
+			//trigger_error("Merci de vous connecter pour accéder à ce service.");
 			return false;
 		}
 
+		// Utilisation d'un objet ArticleAddForm pour la validation des données.
+		// Cette objet implémente l'interface App\Services\FormValidator
+		// return bool
 		$articleAddForm = new ArticleAddForm();
 		$isValid = $articleAddForm->builderFormValidator($post);
 		if ($isValid === true)
 		{
-
+			// Create new pre-User object
 			$userId = $user['user']['id'];
 			$user = new User();
 			$user->set_id($userId);
 
-
+			/*
+			 * Use App\Services\Slug
+			 * Set title slugyfication
+			 * return string
+	 		 * @param string 
+			 */
 			$slugName = Slug::slugify($post['_sTitre']);
 			$checkSlug = $this->getDbRequest()->checkField('article', 'art_sSlug', $slugName);
 			if ($checkSlug === false) {
 				$slugName = Slug::createSlug($post['_sTitre']);
 			}
 
+			// Create new Article
 			$article = new Article();
 			$article->set_iAuteurId($user);
 			$article->set_sTitre($post['_sTitre']);
@@ -117,13 +130,16 @@ class ArticleController implements InterfaceController
 				':art_sSlug' => $slugName
 			);
 
-			
+			// create new insert request in database
 			$insertNewArticle = $this->getDbRequest()->insert("
 				INSERT INTO article (usr_id, art_sTitre, art_sContenu, art_dDateCreation, art_sSlug)
 				VALUES (:usr_id, :art_sTitre, :art_sContenu, NOW(), :art_sSlug)
 			",$params);
 			
-
+			/*
+			 * Extract datas catagories
+			 * Check if is exist in database
+			 */
 			foreach ($post as $key => $value) {
 				$keyName = explode('_', $key);
 				$keyName = $keyName[0];
@@ -138,20 +154,25 @@ class ArticleController implements InterfaceController
 							INSERT INTO join_article_categorie (art_id, cat_id)
 							VALUES (:art_id, :cat_id)
 						", $params);
+					}else{
+						//throw new Exception("Les catégories sélectionnées n'existent pas.", 1);
+						trigger_error("Les catégories sélectionnées n'existent pas.");
+						return false;
 					}
+				}else{
+					//throw new Exception("Erreur dans les noms des champs catégories.", 1);
+					trigger_error("Erreur dans les noms des champs catégories.");
+					return false;
 				}
 			}
 			return $article;
-
 		}else{
 			return false;
 		}
-
-	
 	}
 
 	/**
-	 * Search entities Articles App\Model\Article
+	 * Search entities Articles App\Model\Article - METHOD POST
 	 * return array Article Objects
 	 * @param null|string $keyWord A string with keyWord name by POST method
 	 * @param null|int $limit The number of Article in loop
@@ -177,7 +198,7 @@ class ArticleController implements InterfaceController
 	}
 
 	/**
-	 * Search entities Articles App\Model\Article within Categories
+	 * Search entities Articles App\Model\Article within Categories - METHOD GET
 	 * return array Article Objects
 	 * @param null|string $keyWord A string with keyWord name by GET method
 	 * @param null|int $limit The number of Article in loop
@@ -224,53 +245,21 @@ class ArticleController implements InterfaceController
 
 	}
 
-
-
 	/**
-	 * Categorie(s) builder App\Model\Categorie
-	 * return array Categorie Objects
-	 *@ 
-	 *
-	private function categoryBuilder($row){
-		$categorie = new Categorie();
-		$categorie->set_id($row->{'cat_id'});
-		$categorie->set_sNom($row->{'cat_sNom'});
-		$categorie->set_sResume($row->{'cat_sResume'});
-		$categorie->set_bActif($row->{'cat_bActif'});
-		$categorie->set_sSlug($row->{'cat_sSlug'});
-		$categorie->set_sCodeHexa($row->{'cat_sCodeHexa'});
-
-		return $categorie;
-	} 
-	*/
-
-
-
-
-	/**
-	 * use Interface InterfaceController
-	 * Set entities Article App\Model\Article
+	 * use App\Controller\Interface\InterfaceController 
+	 * use App\Controller\UserController 		=> categoryBuilder 
+	 * use App\Controller\CategorieController 	=> userBuilder
+	 * Set InterfaceEntities Article App\Model\Article
 	 * return array Objects
 	 * @param string $entity 
 	 */	
-	public function entityBuilder($row)
+	final function entityBuilder($row)
 	{
 			$article = new Article();
 			$article->set_Id($row->{'art_id'});
 
 			if (!empty($row->{'usr_id'})) {
-
 				$author = $this->userBuilder->entityBuilder($row);
-
-				/*$author = new User();
-				$author->set_id($row->{'usr_id'});
-				$author->set_sNom($row->{'usr_sNom'});
-				$author->set_sPrenom($row->{'usr_sPrenom'});
-				$author->set_sMail($row->{'usr_sMail'});
-				$author->set_bActif($row->{'usr_bActif'});
-				$author->set_bAdmin($row->{'usr_bAdmin'});
-				$author->set_sAvatar($row->{'usr_sAvatar'});
-				*/
 				$article->set_iAuteurId($author);
 			}
 			
@@ -288,8 +277,6 @@ class ArticleController implements InterfaceController
 				foreach ($reqCategorieJoin as $row){
 
 					$categories = $this->categoryBuilder->entityBuilder($row);
-
-					//$categories = $this->categoryBuilder($row);
 					$articleCategories[] = $categories;
 				}
 				$article->set_aCategories($articleCategories);

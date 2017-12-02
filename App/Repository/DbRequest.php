@@ -30,7 +30,7 @@ class DbRequest
 		return $datas;
 	}
 
-	public function findById($sqlRequest, $id)
+	public function findById($sqlRequest, int $id)
 	{
 		$req = $this->getDb()->prepare($sqlRequest);
 		$req->bindValue(':id', $id, PDO::PARAM_INT);
@@ -54,8 +54,9 @@ class DbRequest
 	public function findOneByData($sqlRequest, $data)
 	{
 		$req = $this->getDb()->prepare($sqlRequest);
-		$req->bindValue(':data', $data, PDO::PARAM_INT);
-		$req->execute();
+		$req->execute(array(
+			':data' => $data
+		));
 		$datas = $req->fetch(PDO::FETCH_OBJ);
 		$req->closeCursor();
 		return $datas;
@@ -65,7 +66,6 @@ class DbRequest
 		$req = $this->getDb()->prepare("
 			SELECT $champ FROM $table WHERE $champ=:field
 		");
-		//$req->bindValue(':field', $field, PDO::PARAM_INT);
 		$req->execute(array(':field'=> $field));
 		$datas = $req->rowCount();
 		$req->closeCursor();
@@ -106,7 +106,6 @@ class DbRequest
 
 
 	public function updateByOneField($sqlRequest, $field){
-
 		$req = $this->getDb()->prepare($sqlRequest);
 		$req->execute(array(':field'=> $field));
 	}

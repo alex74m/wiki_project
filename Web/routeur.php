@@ -1,5 +1,28 @@
 <?php
 
+/*-------------REQUEST---------------------------*/
+if (isset($_GET['page'])) {
+	$page = htmlentities($_GET['page']);
+}else{
+	$page = 'home';
+}
+if (isset($_GET['action'])) {
+	$action = htmlentities($_GET['action']);
+}else{
+	$action = null;
+}
+if (isset($_GET['data'])) {
+	$data = htmlentities($_GET['data']);
+}else{
+	$data = null;
+}
+if (isset($_SESSION['user'])) {
+	$app_session_user = $_SESSION['user'];
+}else{
+	$app_session_user = null;
+}
+
+/*--------------RESPONSE---------------------------*/
 
 if ($page == 'home') {
 	$listArticles = $articleController->indexAction('DESC', 30);

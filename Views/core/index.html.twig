@@ -12,8 +12,8 @@
         {% for article in listArticles %}
 
         	<div class="col-md-4">
-                <h3>{{ article._sTitre }}</h3> <cite>By {{ article._iAuteurId._sNom }}</cite>
-                <p> {{ article._sContenu|truncate(20, true) }}</p>
+                <h3 class="blockArticle">{{ article._sTitre|truncate(20, true) }}</h3> <cite>By {{ article._iAuteurId._sNom }}</cite>
+                <p class="blockArticle"> {{ article._sContenu|truncate(20, true) }}</p>
                 <div>
                     <div><a href="article/view/{{article._sSlug}}">En savoir +</a></div> 
                     <div class="tags">

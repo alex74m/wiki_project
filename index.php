@@ -44,26 +44,4 @@ $twig->addExtension(new Twig_Extension_Debug());
 $twig->addExtension(new Twig_Extensions_Extension_Text());
 
 //ROUTING
-if (isset($_GET['page'])) {
-	$page = htmlentities($_GET['page']);
-}else{
-	$page = 'home';
-}
-if (isset($_GET['action'])) {
-	$action = htmlentities($_GET['action']);
-}else{
-	$action = null;
-}
-if (isset($_GET['data'])) {
-	$data = htmlentities($_GET['data']);
-}else{
-	$data = null;
-}
-if (isset($_SESSION['user'])) {
-	$app_session_user = $_SESSION['user'];
-}else
-{
-	$app_session_user = null;
-}
-
-require_once 'routeur.php';
+require_once 'Web/routeur.php';

@@ -6,7 +6,7 @@ class FormValidator
 {
 	private $validField = array();
 
-	public function validFormType($field, $verification=array())
+	public function validFormType($field, $verification = array())
 	{
 		$this->validField = $this->getValidation($field, $verification);
 		
@@ -17,7 +17,7 @@ class FormValidator
 		return true;
 	}
 
-	public function getValidation($field, $verification=array())
+	public function getValidation($field, $verification = array())
 	{
 		$validIsTrue = array();
 		foreach ($verification as $key => $control) {
@@ -73,6 +73,7 @@ class FormValidator
 			if(filter_var($field, FILTER_VALIDATE_EMAIL)){
 				return true;
 			}else{
+				//throw new \Exception("Cette e-mail n'est pas valide. Format accepté : exemple@monsite.com.", 1);
 				trigger_error("Cette e-mail n'est pas valide. Format accepté : exemple@monsite.com.");
 				return false;
 			}
@@ -81,6 +82,7 @@ class FormValidator
 			if(filter_var($field, FILTER_VALIDATE_URL)){
 				return true;
 			}else{
+				//throw new \Exception("Cette e-url n'est pas valide.", 1);
 				trigger_error("Cette e-url n'est pas valide.");
 				return false;
 			}
@@ -89,9 +91,17 @@ class FormValidator
 			return true;
 		}
 		elseif ($control == 'password') {
-			return true;
+			if(!preg_match("/(([a-z][0-9])|([0-9][a-z])|[A-Z][0-9]|([0-9][A-Z]))/",$field)){
+				//throw new \Exception("Le mot de passe doit comporter des lettres et des chiffres.", 1);
+				trigger_error("Le mot de passe doit comporter des lettres et des chiffres.");
+				return false;
+			}
+			else{
+				return true;
+			}
 		}
 		else {
+			//throw new \Exception("Ce type de champ n'est pas valide : $control", 1);
 			trigger_error("Ce type de champ n'est pas valide.");
 			return false;
 		}
