@@ -10,7 +10,7 @@ use \App\Model\Article;
 use \App\Model\User;
 use \App\Model\Categorie;
 use \App\Services\Slug;
-use \App\Form\ArticleAddForm;
+use \App\Form\ArticleForm;
 
 /**
  * @ArticleController
@@ -64,10 +64,18 @@ class ArticleController implements InterfaceController
 	 */
 	public function getArticleAction($slug, $user = null)
 	{
-		$articleQuery = $this->getDbRequest()->findOneByData("
+		/*
+			$articleQuery = $this->getDbRequest()->findOneByData("
 			SELECT * FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id 
 			WHERE article.art_sSlug=:data",$slug);
+		*/
+
+		$articleQuery = $this->getDbRequest()->queryOneByOneField("
+			SELECT * FROM article 
+			LEFT JOIN user ON article.usr_id=user.usr_id 
+			WHERE article.art_sSlug=:field",$slug, 'string', 'object'
+		);
 
 		if(!empty($articleQuery))
 			$article = $this->entityBuilder($articleQuery);
@@ -86,15 +94,15 @@ class ArticleController implements InterfaceController
 	public function addArticleAction($post, $user)
 	{
 		if (empty($user)) {
-			throw new Exception("Merci de vous connecter pour accéder à ce service.", 1);
+			trigger_error("Merci de vous connecter pour accéder à ce service.");
 			//trigger_error("Merci de vous connecter pour accéder à ce service.");
 			return false;
 		}
 
-		// Utilisation d'un objet ArticleAddForm pour la validation des données.
+		// Utilisation d'un objet ArticleForm pour la validation des données.
 		// Cette objet implémente l'interface App\Services\FormValidator
 		// return bool
-		$articleAddForm = new ArticleAddForm();
+		$articleAddForm = new ArticleForm();
 		$isValid = $articleAddForm->builderFormValidator($post);
 		if ($isValid === true)
 		{
@@ -159,10 +167,6 @@ class ArticleController implements InterfaceController
 						trigger_error("Les catégories sélectionnées n'existent pas.");
 						return false;
 					}
-				}else{
-					//throw new Exception("Erreur dans les noms des champs catégories.", 1);
-					trigger_error("Erreur dans les noms des champs catégories.");
-					return false;
 				}
 			}
 			return $article;
@@ -178,22 +182,17 @@ class ArticleController implements InterfaceController
 	 */
 	public function updateArticle($idArticle, $post, $user)
 	{
-		/*var_dump($idArticle);
-		echo '<hr>';
-		var_dump($post);
-		echo '<hr>';
-		var_dump($user);
-die();*/
+
 		if (empty($user)) {
-			throw new Exception("Merci de vous connecter pour accéder à ce service.", 1);
+			trigger_error("Merci de vous connecter pour accéder à ce service.");
 			//trigger_error("Merci de vous connecter pour accéder à ce service.");
 			return false;
 		}
 
-		// Utilisation d'un objet ArticleAddForm pour la validation des données.
+		// Utilisation d'un objet ArticleForm pour la validation des données.
 		// Cette objet implémente l'interface App\Services\FormValidator
 		// return bool
-		$articleUpdForm = new ArticleAddForm();
+		$articleUpdForm = new ArticleForm();
 		$isValid = $articleUpdForm->builderFormValidator($post);
 		if ($isValid === true)
 		{
@@ -252,7 +251,7 @@ die();*/
 							'art_id' => $idArticle,
 							'cat_id' => $idCategory
 						);
-						$checkCategorieInArticle = $this->getDbRequest()->queryWithMultiField("
+						$checkCategorieInArticle = $this->getDbRequest()->queryEntityWithMultiField("
 							SELECT art_id 
 							FROM join_article_categorie 
 							WHERE art_id=:art_id AND cat_id=:cat_id", $params
@@ -262,6 +261,8 @@ die();*/
 								INSERT INTO join_article_categorie (art_id, cat_id)
 								VALUES (:art_id, :cat_id)
 							", $params);
+						}else{
+
 						}
 					}else{
 						//throw new Exception("Les catégories sélectionnées n'existent pas.", 1);
@@ -301,7 +302,11 @@ die();*/
 						trigger_error("Vous pouvez seulement activer ou inactiver un article.");
 						return false;
 					}
-					$this->getDbRequest()->updateByOneField("UPDATE article SET art_bActif=$actif WHERE art_id=:field",$idArticle);
+					$params = array(
+						':art_bActif' => $actif,
+						':art_id' => $idArticle
+					);
+					$this->getDbRequest()->update("UPDATE article SET art_bActif=:art_bActif WHERE art_id=:art_id",$params);
 					return true;
 				}
 			}
@@ -340,7 +345,7 @@ die();*/
 					':idArticle' => $idArticle,
 					':idUser' => $user['id']
 				);
-				$correspondArticle = $this->getDbRequest()->queryWithMultiField("SELECT art_id FROM article WHERE art_id=:idArticle AND usr_id=:idUser",$params);
+				$correspondArticle = $this->getDbRequest()->queryEntityWithMultiField("SELECT art_id FROM article WHERE art_id=:idArticle AND usr_id=:idUser",$params);
 				if ($correspondArticle == true) {
 					$this->getDbRequest()->delete("DELETE FROM join_article_categorie WHERE art_id=:id",$idArticle);
 					$this->getDbRequest()->delete("DELETE FROM article WHERE art_id=:id",$idArticle);
@@ -455,7 +460,10 @@ die();*/
 			$article->set_bActif($row->{'art_bActif'});
 			$article->set_sSlug($row->{'art_sSlug'});
 
-			$reqCategorieJoin = $this->getDbRequest()->queryJoinCategoriesByArticle($article->get_Id());
+			$sqlRequest = "SELECT * FROM categorie,join_article_categorie
+				WHERE join_article_categorie.art_id=:id 
+				AND join_article_categorie.cat_id=categorie.cat_id";
+			$reqCategorieJoin = $this->getDbRequest()->findById($sqlRequest,$article->get_Id(),'int', 'object');
 
 			if (!empty($reqCategorieJoin)) {
 				$articleCategories = array();

@@ -1,6 +1,0 @@
-<?php
-
-$config['default'] array(
-	'' => ,
-
-);

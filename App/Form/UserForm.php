@@ -4,7 +4,7 @@ namespace App\Form;
 
 use \App\Services\FormValidator;
 
-class UserInscriptionForm
+class UserForm
 {
 	private $formValidator;
 	private $tabFieldValidator = array();

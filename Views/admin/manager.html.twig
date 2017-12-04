@@ -7,9 +7,44 @@
     {% set activeMenu = 'tabUser' %}
 {% endif %}
 
+{# Comptage du nombre d'articles non actif #}
+{% set nbArticleNotRead = [] %}
+{% for article in listArticles %}
+    {% if article._bActif == 0 %}
+        {% set nbArticleNotRead = nbArticleNotRead|merge([article._id]) %}
+    {% endif %}
+{% endfor %}
+{# Comptage du nombre d'articles actif #}
+{% set nbArticleRead = [] %}
+{% for article in listArticles %}
+    {% if article._bActif == 1 %}
+        {% set nbArticleRead = nbArticleRead|merge([article._id]) %}
+    {% endif %}
+{% endfor %}
+
+{# Comptage du nombre d'utilisateur désactivé#}
+{% set nbUserNotActif = [] %}
+{% for user in listUsers %}
+    {% if user._bActif == 0 %}
+        {% set nbUserNotActif = nbUserNotActif|merge([user._id]) %}
+    {% endif %}
+{% endfor %}
+
+{# Comptage du nombre d'utilisateur activé#}
+{% set nbUserActif = [] %}
+{% for user in listUsers %}
+    {% if user._bActif == 1 %}
+        {% set nbUserActif = nbUserActif|merge([user._id]) %}
+    {% endif %}
+{% endfor %}
+
+
 {% block title %}Administration{% endblock %}
 
 {% block body %}
+
+
+
 
     {% if app_session_user is not null %}
         {% if app_session_user.role == 1 %}
@@ -23,11 +58,14 @@
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
                         <ul class="nav nav-tabs">
-                            <li {% if activeMenu == 'tabUser' %}{{"class='active'"}}{% endif %}><a href="#tabUser" data-toggle="tab">Liste des users</a>
+                            <li {% if activeMenu == 'tabUser' %}{{"class='active'"}}{% endif %}>
+                                <a href="#tabUser" data-toggle="tab">Liste des users{% if nbUserActif is defined %}<span class="alert alert-success">{{nbUserActif|length}} </span>{% endif %}
+                            {% if nbUserNotActif is defined %}<span class="alert alert-danger">{{nbUserNotActif|length}} </span>{% endif %}
+                            </a>
                             </li>
-                            <li {% if activeMenu == 'tabArticle' %}{{"class='active'"}}{% endif %}><a href="#tabArticle" data-toggle="tab">Liste des articles</a>
+                            <li {% if activeMenu == 'tabArticle' %}{{"class='active'"}}{% endif %}><a href="#tabArticle" data-toggle="tab">Liste des articles {% if nbArticleRead is defined %}<span class="alert alert-info">{{nbArticleRead|length}} </span>{% endif %}</a>
                             </li>
-                            <li><a href="#tab3default" data-toggle="tab">Articles à valider</a>
+                            <li><a href="#tab3default" data-toggle="tab">Articles à valider {% if nbArticleNotRead is defined %}<span class="alert alert-warning">{{nbArticleNotRead|length}} </span>{% endif %}</a>
                             </li>
                             <li><a href="#tab4default" data-toggle="tab">Ajouter des catégories</a>
                             </li>

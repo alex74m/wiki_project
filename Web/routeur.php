@@ -34,13 +34,13 @@ if ($page == 'home') {
 }
 elseif ($page == 'inscription') {
 
-	if (empty($_SESSION['user']) & empty($_POST)) {
+	if (empty($app_session_user) & empty($_POST)) {
 		$template = $twig->load('core/inscription.html.twig');
 		echo $template->render(array(
 			'app_session_user' => $app_session_user
 		));
 	}
-	elseif (empty($_SESSION['user']) & !empty($_POST)) {
+	elseif (empty($app_session_user) & !empty($_POST)) {
 
 		$datasUser = $_POST;
 		$validAddUser = $userController->addUserInscription($datasUser);
@@ -74,7 +74,7 @@ elseif ($page == 'inscription') {
 }
 elseif ($page == 'login') {
 
-	if (empty($_SESSION['user']) & empty($_POST))
+	if (empty($app_session_user) & empty($_POST))
 	{
 		$template = $twig->load('core/login.html.twig');
 		echo $template->render(array(
@@ -82,7 +82,7 @@ elseif ($page == 'login') {
 		));
 
 	}
-	elseif (empty($_SESSION['user']) & !empty($_POST))
+	elseif (empty($app_session_user) & !empty($_POST))
 	{
 		$userConnection = $userController->connexionUser($_POST);
 		if ($userConnection === true) {
@@ -108,13 +108,14 @@ elseif ($page == 'admin' & ($action == 'inactivationUser' || $action == 'activat
 			trigger_error("Vous devez être administrateur.");
 		}
 		$idUser = (int)$data;
-		if ($action == 'inactivationUser') {
-			$userController->inactivationUser($idUser);
+
+		$userController->activationUser($action, $idUser);
+
+		if ($userController == false) {
 			$flashMessage = "L'utilisateur a bien été désactivé.";
 			$flashName = "success";
 		}
-		if ($action == 'activationUser') {
-			$userController->activationUser($idUser);
+		if ($userController == true) {
 			$flashMessage = "L'utilisateur a bien été activé.";
 			$flashName = "success";
 		}
@@ -160,7 +161,6 @@ elseif ($page == 'admin' & $action == 'updArticle' & $data != null) {
 	$idArticle = $data;
 	$article = $articleController->getArticleAction($idArticle, $app_session_user);
 
-
 	if ($app_session_user != null & empty($_POST)) {
 		$listCategories = $articleController->findCategorieArticleAction();
 		$template = $twig->load('core/upd_article.html.twig');
@@ -171,9 +171,7 @@ elseif ($page == 'admin' & $action == 'updArticle' & $data != null) {
 		));	
 	}
 	elseif ($app_session_user != null & !empty($_POST)) {
-		
 		$articleUpdate = $articleController->updateArticle($idArticle, $_POST, $app_session_user);
-var_dump($articleUpdate);
 		$slug = $articleUpdate->get_sSlug();
 		header("Location: article/view/$slug");
 	}
@@ -326,6 +324,7 @@ elseif ($page == 'logout') {
 	setcookie(session_name(), 'vide', time() - 25*3600);
 	session_destroy();
 	$_SESSION = array();
+	unset($app_session_user);
 	header('Location: home');
 }
 else{

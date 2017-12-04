@@ -10,7 +10,7 @@ use \App\Model\User;
 use \App\Services\Crypt;
 use \App\Services\Token;
 
-use \App\Form\UserInscriptionForm;
+use \App\Form\UserForm;
 
 
 class UserController implements InterfaceController
@@ -35,7 +35,7 @@ class UserController implements InterfaceController
 	 */
 	public function addUserInscription($datas)
 	{
-		$userInscriptionForm = new UserInscriptionForm();
+		$userInscriptionForm = new UserForm();
 		$isValid = $userInscriptionForm->builderFormValidator($datas);
 
 		if ($isValid === true)
@@ -92,7 +92,10 @@ class UserController implements InterfaceController
 		$checkMail = $this->getDbRequest()->checkField('user', 'usr_sMail', $mail);
 
 		if ($checkMail == false ) {
-			$infoUser = $this->getDbRequest()->findOne("SELECT * FROM user WHERE usr_sMail=:field", $mail);
+			$infoUser = $this->getDbRequest()->queryOneByOneField("
+				SELECT * FROM user 
+				WHERE usr_sMail=:field", $mail, 'string', 'object'
+			);
 			
 			$psw = $datas['_sPwd'];
 
@@ -151,7 +154,7 @@ class UserController implements InterfaceController
 	 * return void
 	 * @param int $idUser The id User
 	 */
-	public function inactivationUser($idUser)
+	/*public function inactivationUser($idUser)
 	{
 		
 		$checkUser = $this->getDbRequest()->checkField('user', 'usr_id', $idUser);
@@ -159,18 +162,18 @@ class UserController implements InterfaceController
 		if($checkUser != false) {
 			trigger_error("Cette utilisateur n'existe pas.");
 		}
-
-		$reqInactivUser = $this->getDbRequest()->updateByOneField("
-			UPDATE user SET usr_bActif=0 WHERE usr_id=:field
-		", $idUser);
-	}
+		$params = array('usr_id' => $idUser)
+		$reqInactivUser = $this->getDbRequest()->update("
+			UPDATE user SET usr_bActif=0 WHERE usr_id=:usr_id
+		", $params);
+	}*/
 
 	/**
 	 * Update _bActif of entity User App\Model\User - Activation
 	 * return void
 	 * @param int $idUser The id User
 	 */
-	public function activationUser($idUser)
+	public function activationUser($active, $idUser)
 	{
 		
 		$checkUser = $this->getDbRequest()->checkField('user', 'usr_id', $idUser);
@@ -178,10 +181,20 @@ class UserController implements InterfaceController
 		if ($checkUser != false) {
 			trigger_error("Cette utilisateur n'existe pas.");
 		}
+		$params = array(':usr_id' => $idUser);
 
-		$reqInactivUser = $this->getDbRequest()->updateByOneField("
-			UPDATE user SET usr_bActif=1 WHERE usr_id=:field
-		", $idUser);
+		if ($active == 'activationUser') {
+			$reqActivUser = $this->getDbRequest()->update("
+				UPDATE user SET usr_bActif=1 WHERE usr_id=:usr_id
+			", $params);
+			return true;
+		}elseif ($active == 'inactivationUser') {
+			$reqInactivUser = $this->getDbRequest()->update("
+				UPDATE user SET usr_bActif=0 WHERE usr_id=:usr_id
+			", $params);
+			return false;
+		}
+
 	}
 
 	/**
