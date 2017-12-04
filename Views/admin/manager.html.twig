@@ -1,14 +1,20 @@
 {% extends "layout.html.twig" %}
 {% set active = 'admin' %}
+
+{% if activeMenu is not null %}
+    {% set activeMenu = activeMenu %}
+{% else %}
+    {% set activeMenu = 'tabUser' %}
+{% endif %}
+
 {% block title %}Administration{% endblock %}
 
 {% block body %}
 
-
-            {% if app_session_user is not null %}
-                 {% if app_session_user.role == 1 %}
+    {% if app_session_user is not null %}
+        {% if app_session_user.role == 1 %}
  
-                    <h1>Espace d'administration</h1>
+            <h1>Espace d'administration</h1>
             <p>
                 {% if flashMessage is defined %}
                     <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
@@ -17,21 +23,26 @@
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
                         <ul class="nav nav-tabs">
-                            <li class="active"><a href="#tab1default" data-toggle="tab">Liste des users</a></li>
-                            <li><a href="#tab2default" data-toggle="tab">Liste des articles</a></li>
-                            <li><a href="#tab3default" data-toggle="tab">Articles à valider</a></li>
-                            <li><a href="#tab4default" data-toggle="tab">Ajouter des catégories</a></li>
+                            <li {% if activeMenu == 'tabUser' %}{{"class='active'"}}{% endif %}><a href="#tabUser" data-toggle="tab">Liste des users</a>
+                            </li>
+                            <li {% if activeMenu == 'tabArticle' %}{{"class='active'"}}{% endif %}><a href="#tabArticle" data-toggle="tab">Liste des articles</a>
+                            </li>
+                            <li><a href="#tab3default" data-toggle="tab">Articles à valider</a>
+                            </li>
+                            <li><a href="#tab4default" data-toggle="tab">Ajouter des catégories</a>
+                            </li>
                             <li class="dropdown">
                                 <a href="#" data-toggle="dropdown">Mon compte <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#tab5default" data-toggle="tab">Mes infomations</a></li>
+                                    <li><a href="#tab5default" data-toggle="tab">Mes infomations</a>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
                 </div>
                 <div class="panel-body">
                     <div class="tab-content">
-                        <div class="tab-pane fade in active" id="tab1default">
+                        <div class="tab-pane fade in {% if activeMenu == 'tabUser' %}{{"active"}}{% endif %}" id="tabUser">
 
 
                             <div class="table-responsive">          
@@ -53,9 +64,13 @@
                                 <tbody>
                             {% for user in listUsers %}
                                <tr>
-                                    <td><a href="admin/updateUser/{{user._id}}" class="btn btn-info"><span class="glyphicon glyphicon-refresh"></span> Modifier</a></td>
-                                    <td><a href="admin/{% if user._bActif == 1 %}{{'inactivationUser'}}{%else%}{{'activationUser'}}{% endif %}/{{user._id}}" class="btn btn-danger"  onclick="return confirm('Êtes-vous sûr de votre choix ?')"><span class="glyphicon glyphicon-{% if user._bActif == 1 %}{{'floppy-remove'}}{%else%}{{'floppy-saved'}}{% endif %}"></span> {% if user._bActif == 1 %}{{'Désactiver'}}{%else%}{{'Activer'}}{% endif %}</a></td>
-                                    <td>{% if user._bAdmin == 1 %}{{'Admin'}}{% else %}{{'User'}}{% endif %}</td>
+                                    <td><a href="admin/updateUser/{{user._id}}" class="btn btn-info" disabled="disabled"><span class="glyphicon glyphicon-refresh"></span> Modifier</a>
+                                    </td>
+                                    <td><a href="admin/{% if user._bActif == 1 %}{{'inactivationUser'}}{%else%}{{'activationUser'}}{% endif %}/{{user._id}}" class="btn btn-danger"  onclick="return confirm('Êtes-vous sûr de votre choix ?')"><span class="glyphicon glyphicon-{% if user._bActif == 1 %}{{'floppy-remove'}}{%else%}{{'floppy-saved'}}{% endif %}"></span> {% if user._bActif == 1 %}{{'Désactiver'}}{%else%}{{'Activer'}}{% endif %}</a>
+                                    </td>
+                                    <td>
+                                        {% if user._bAdmin == 1 %}{{'Admin'}}{% else %}{{'User'}}{% endif %}
+                                    </td>
                                     <td>{{user._id}}</td>
                                     <td>{{user._sNom}}</td>
                                     <td>{{user._sPrenom}}</td>
@@ -72,23 +87,139 @@
                               </div>
 
                         </div>
-                        <div class="tab-pane fade" id="tab2default">A coder</div>
-                        <div class="tab-pane fade" id="tab3default">A coder</div>
+                        <div class="tab-pane fade {% if activeMenu == 'tabArticle' %}{{"active"}}{% endif %}" id="tabArticle">
+
+                            <div class="table-responsive">          
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th>Modifier</th>
+                                    <th>Supprimer</th>
+                                    <th>Désactiver</th>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Contenu</th>
+                                    <th>Date d'ajout</th>
+                                    <th>Date MAJ</th>
+                                    <th>Actif</th>
+                                    <th>Slug</th>
+                                    <th>Catégorie(s)</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                            {% for article in listArticles %}
+                                {% if article._bActif == 1 %}
+
+                                   <tr>
+                                    <td>
+                                        <a href="admin/updArticle/{{article._sSlug}}" class="btn btn-info">
+                                            <span class="glyphicon glyphicon-refresh"></span> Modifier
+                                        </a>
+                                    </td>
+                                    </td>
+                                        <td>
+                                            <a href="admin/delArticle/{{article._id}}" class="btn btn-info" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette article ?')">
+                                                <span class="glyphicon glyphicon-trash"></span> Supprimer
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="admin/{% if article._bActif == 1 %}{{'inactivationArticle'}}{%else%}{{'activationArticle'}}{% endif %}/{{article._id}}" class="btn btn-danger"  onclick="return confirm('Êtes-vous sûr de votre choix ?')">
+                                                <span class="glyphicon glyphicon-floppy-remove"></span>
+                                                Désactiver
+                                            </a>
+                                        </td>
+                                        <td>{{article._id}}</td>
+                                        <td><a href="article/view/{{article._sSlug}}">{{article._sTitre}}</a></td>
+                                        <td>{{article._sContenu|truncate(20, true)}}</td>
+                                        <td>{{article._dDateAjout}}</td>
+                                        <td>{{article._dDateLastModif}}</td>
+                                        <td>{{article._bActif}}</td>
+                                        <td>{{article._sSlug}}</td>            
+                                        <td>
+                                            {% for category in article._aCategories %}
+                                                <span>{{ category._sNom }}</span>
+                                            {% endfor %}
+                                        </td>
+                                      </tr>
+                                {% endif %}
+
+                            {% endfor %}                                    
+       
+                                </tbody>
+                              </table>
+                              </div>
+
+
+
+                        </div>
+                        <div class="tab-pane fade" id="tab3default">
+
+
+                            <div class="table-responsive">          
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th>Supprimer</th>
+                                    <th>Activer</th>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Contenu</th>
+                                    <th>Date d'ajout</th>
+                                    <th>Date de mise à jour</th>
+                                    <th>Actif</th>
+                                    <th>Slug</th>
+                                    <th>Catégorie(s)</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                            {% for article in listArticles %}
+                            {% if article._bActif == 0 %}
+                               <tr>
+                                    <td>
+                                        <a href="admin/delArticle/{{article._id}}" class="btn btn-info" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette article ?')">
+                                            <span class="glyphicon glyphicon-trash"></span> Supprimer
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="admin/{% if article._bActif == 1 %}{{'inactivationArticle'}}{%else%}{{'activationArticle'}}{% endif %}/{{article._id}}" class="btn btn-danger"  onclick="return confirm('Êtes-vous sûr de votre choix ?')">
+                                            <span class="glyphicon glyphicon-{% if article._bActif == 1 %}{{'floppy-remove'}}{%else%}{{'floppy-saved'}}{% endif %}"></span> {% if article._bActif == 1 %}{{'Désactiver'}}{%else%}{{'Activer'}}{% endif %}
+                                        </a>
+                                    </td>
+                                    <td>{{article._id}}</td>
+                                    <td><a href="article/view/{{article._sSlug}}">{{article._sTitre}}</a></td>
+                                    <td>{{article._sContenu|truncate(20, true)}}</td>
+                                    <td>{{article._dDateAjout}}</td>
+                                    <td>{{article._dDateLastModif}}</td>
+                                    <td>{{article._bActif}}</td>
+                                    <td>{{article._sSlug}}</td>            
+                                    <td>
+                                        {% for category in article._aCategories %}
+                                            <span>{{ category._sNom }}</span>
+                                        {% endfor %}
+                                    </td>
+                                  </tr>
+
+                                {% endif %}
+
+                            {% endfor %}                                    
+       
+                                </tbody>
+                              </table>
+                              </div>
+
+
+                        </div>
                         <div class="tab-pane fade" id="tab4default">A coder</div>
                         <div class="tab-pane fade" id="tab5default">A coder</div>
-
-                    </div>
                 </div>
-                </div>
-                {% else %}
-                    Vous n'avez pas les droits nécessaires
-                {% endif %}
-                {% else %}
-                    Vous n'êtes pas connecté!
-              {% endif %}
-
-
-
+            </div>
+        </div>
+    {% else %}
+        Vous n'avez pas les droits nécessaires
+    {% endif %}
+{% else %}
+    Vous n'êtes pas connecté!
+{% endif %}
 
 
 {% endblock %}

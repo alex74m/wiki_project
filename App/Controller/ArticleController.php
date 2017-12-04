@@ -62,12 +62,12 @@ class ArticleController implements InterfaceController
 	 * return Article Object
 	 * @param string $slug A string within article slug name
 	 */
-	public function viewArticleAction($slug)
+	public function getArticleAction($slug, $user = null)
 	{
 		$articleQuery = $this->getDbRequest()->findOneByData("
 			SELECT * FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id 
-			WHERE article.art_sSlug='$slug'",$slug);
+			WHERE article.art_sSlug=:data",$slug);
 
 		if(!empty($articleQuery))
 			$article = $this->entityBuilder($articleQuery);
@@ -167,6 +167,191 @@ class ArticleController implements InterfaceController
 			}
 			return $article;
 		}else{
+			return false;
+		}
+	}
+
+	/**
+	 * Update an entity Article App\Model\Article
+	 * return Article Object
+	 * @param int $id of the article
+	 */
+	public function updateArticle($idArticle, $post, $user)
+	{
+		/*var_dump($idArticle);
+		echo '<hr>';
+		var_dump($post);
+		echo '<hr>';
+		var_dump($user);
+die();*/
+		if (empty($user)) {
+			throw new Exception("Merci de vous connecter pour accéder à ce service.", 1);
+			//trigger_error("Merci de vous connecter pour accéder à ce service.");
+			return false;
+		}
+
+		// Utilisation d'un objet ArticleAddForm pour la validation des données.
+		// Cette objet implémente l'interface App\Services\FormValidator
+		// return bool
+		$articleUpdForm = new ArticleAddForm();
+		$isValid = $articleUpdForm->builderFormValidator($post);
+		if ($isValid === true)
+		{
+			// Create new pre-User object
+			$userId = $user['id'];
+			$user = new User();
+			$user->set_id($userId);
+	
+
+			/*
+			 * Use App\Services\Slug
+			 * Set title slugyfication
+			 * return string
+	 		 * @param string 
+			 */
+			$slugName = Slug::slugify($post['_sTitre']);
+			$checkSlug = $this->getDbRequest()->checkField('article', 'art_sSlug', $slugName);
+			if ($checkSlug === false) {
+				$slugName = Slug::createSlug($post['_sTitre']);
+			}
+
+			// Create new Article
+			$article = new Article();
+			$article->set_iAuteurId($user);
+			$article->set_sTitre($post['_sTitre']);
+			$article->set_sContenu($post['_sContenu']);
+			$article->set_bActif(0);
+			$article->set_sSlug($slugName);
+
+			$params = array(
+				':art_sTitre' => $article->get_sTitre(),
+				':art_sContenu' => $article->get_sContenu(),
+				':art_sSlug' => $slugName,
+				':art_id' => $idArticle
+			);
+
+			// create new insert request in database
+			$updateArticle = $this->getDbRequest()->update("
+				UPDATE article 
+				SET art_sTitre=:art_sTitre, art_sContenu=:art_sContenu, art_dDateCreation=NOW(), art_sSlug=:art_sSlug
+				WHERE art_id=:art_id
+			",$params);
+			
+			/*
+			 * Extract datas catagories
+			 * Check if is exist in database
+			 */
+			foreach ($post as $key => $idCategory) {
+				$keyName = explode('_', $key);
+				$keyName = $keyName[0];
+				if ($keyName === 'categorie')
+				{
+					$checkCategorie =$this->getDbRequest()->checkField('categorie', 'cat_id', $idCategory);
+					if ($checkCategorie === false) {
+						$params = array(
+							'art_id' => $idArticle,
+							'cat_id' => $idCategory
+						);
+						$checkCategorieInArticle = $this->getDbRequest()->queryWithMultiField("
+							SELECT art_id 
+							FROM join_article_categorie 
+							WHERE art_id=:art_id AND cat_id=:cat_id", $params
+						);
+						if ($checkCategorieInArticle === null) {
+							$this->getDbRequest()->insert("
+								INSERT INTO join_article_categorie (art_id, cat_id)
+								VALUES (:art_id, :cat_id)
+							", $params);
+						}
+					}else{
+						//throw new Exception("Les catégories sélectionnées n'existent pas.", 1);
+						trigger_error("Les catégories sélectionnées n'existent pas.");
+						return false;
+					}
+				}
+			}
+			return $article;
+		}else{
+			return false;
+		}	
+		
+	}
+
+	/**
+	 * Activation or inactivation of an article in database
+	 * return bool
+	 * @param int $id of the article
+	 */
+	public function activationArticle($idArticle, $user, $action){
+
+		if (empty($user)) {
+			trigger_error("Vous n'êtes pas connecté.");
+			return false;
+		}
+		elseif (!empty($user)) {
+			if ($user['role'] == 1) {
+				$idExist = $this->getDbRequest()->checkField('article', 'art_id', $idArticle);
+				if ($idExist == false) {
+					if ($action == 'activation') {
+						$actif = 1;
+					}
+					elseif ($action == 'inactivation') {
+						$actif = 0;
+					}else{
+						trigger_error("Vous pouvez seulement activer ou inactiver un article.");
+						return false;
+					}
+					$this->getDbRequest()->updateByOneField("UPDATE article SET art_bActif=$actif WHERE art_id=:field",$idArticle);
+					return true;
+				}
+			}
+			elseif ($user['role'] == 0) {
+				trigger_error("Vous n'avez pas les droit nécéssaire.");
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
+	}
+
+	/**
+	 * Delete an article in database
+	 * return bool
+	 * @param int $id of the article
+	 */
+	public function deleteArticle($idArticle,$user){
+
+		if (empty($user)) {
+			trigger_error("Vous n'êtes pas connecté");
+			return false;
+		}
+		elseif (!empty($user)) {
+			if ($user['role'] == 1) {
+				$idExist = $this->getDbRequest()->checkField('article', 'art_id', $idArticle);
+				if ($idExist == false) {
+					$this->getDbRequest()->delete("DELETE FROM join_article_categorie WHERE art_id=:id",$idArticle);
+					$this->getDbRequest()->delete("DELETE FROM article WHERE art_id=:id",$idArticle);
+					return true;
+				}
+			}
+			elseif ($user['role'] == 0) {
+				$params = array(
+					':idArticle' => $idArticle,
+					':idUser' => $user['id']
+				);
+				$correspondArticle = $this->getDbRequest()->queryWithMultiField("SELECT art_id FROM article WHERE art_id=:idArticle AND usr_id=:idUser",$params);
+				if ($correspondArticle == true) {
+					$this->getDbRequest()->delete("DELETE FROM join_article_categorie WHERE art_id=:id",$idArticle);
+					$this->getDbRequest()->delete("DELETE FROM article WHERE art_id=:id",$idArticle);
+					return true;
+				}else{
+					trigger_error("Vous devez être l'auteur de l'article pour pouvoir le supprimer");
+					return false;
+				}
+			}
+		}
+		else{
 			return false;
 		}
 	}
@@ -275,10 +460,10 @@ class ArticleController implements InterfaceController
 			if (!empty($reqCategorieJoin)) {
 				$articleCategories = array();
 				foreach ($reqCategorieJoin as $row){
-
 					$categories = $this->categoryBuilder->entityBuilder($row);
 					$articleCategories[] = $categories;
 				}
+
 				$article->set_aCategories($articleCategories);
 			}
 			return $article;

@@ -11,7 +11,6 @@ use \App\Model\Article;
 class DbRequest
 {
 	private $db;
-	//private $entityName;
 	
 	public function __construct(PDO $db)
 	{
@@ -77,13 +76,13 @@ class DbRequest
 	}
 
 	public function queryJoinCategoriesByArticle($idArticle){
-		$categoryQuery = $this->findById("
+		$categoriesQuery = $this->findById("
 				SELECT * FROM categorie,join_article_categorie
 				WHERE join_article_categorie.art_id=:id 
 				AND join_article_categorie.cat_id=categorie.cat_id
 		", $idArticle);
 
-		return $categoryQuery;
+		return $categoriesQuery;
 	}
 
 	public function insert($sqlRequest, $params = null)
@@ -98,15 +97,31 @@ class DbRequest
 		$req = $this->getDb()->prepare($sqlRequest);
 		$req->execute(array(':keyWord' => '%'.$keyWord.'%'));
 		$datas = $req->fetchAll(PDO::FETCH_OBJ);
-
 		$req->closeCursor();
-
 		return $datas;
 	}
-
+	public function update($sqlRequest, $params = null)
+	{
+		$req = $this->getDb()->prepare($sqlRequest);
+		$req->execute($params);
+	}
 
 	public function updateByOneField($sqlRequest, $field){
 		$req = $this->getDb()->prepare($sqlRequest);
 		$req->execute(array(':field'=> $field));
+	}
+
+	public function queryWithMultiField($sqlRequest, $params = null)
+	{
+		$req = $this->getDb()->prepare($sqlRequest);
+		$req->execute($params);
+		$data = $req->fetchAll(PDO::FETCH_OBJ);
+		$req->closeCursor();
+	}
+	public function delete($sqlRequest, int $id)
+	{
+		$req = $this->getDb()->prepare($sqlRequest);
+		$req->bindValue(':id', $id, PDO::PARAM_INT);
+		$req->execute();
 	}
 }

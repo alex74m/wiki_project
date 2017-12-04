@@ -128,7 +128,83 @@ elseif ($page == 'admin' & ($action == 'inactivationUser' || $action == 'activat
 			'listUsers' => $listUsers,
 			'app_session_user' => $app_session_user,
 			'flashMessage' => $flashMessage,
-			'flashName' => $flashName
+			'flashName' => $flashName,
+			'activeMenu' => 'tabUser'
+		));
+}
+elseif ($page == 'admin' & $action == 'delArticle' & $data != null) {
+	$idArticle = (int) $data;
+	$delArticle = $articleController->deleteArticle($idArticle, $app_session_user);
+
+	if ($delArticle == true) {
+		header("Location: admin");
+	}
+	elseif ($delArticle == false) {
+		$flashMessage = '.....';
+		$flashName = 'danger';
+		$listArticles = $articleController->indexAction('DESC', 30);
+		$template = $twig->load('core/index.html.twig');
+		echo $template->render(array(
+			'listArticles' => $listArticles,
+			'flashMessage' => $flashMessage,
+			'flashName' => $flashName,
+			'activeMenu' => 'tabArticle',
+			'app_session_user' => $app_session_user
+		));
+	}else{
+		header("Location: admin");		
+	}
+}
+elseif ($page == 'admin' & $action == 'updArticle' & $data != null) {
+
+	$idArticle = $data;
+	$article = $articleController->getArticleAction($idArticle, $app_session_user);
+
+
+	if ($app_session_user != null & empty($_POST)) {
+		$listCategories = $articleController->findCategorieArticleAction();
+		$template = $twig->load('core/upd_article.html.twig');
+		echo $template->render(array(
+			'datasForm' => $article,
+			'listCategories' => $listCategories,
+			'app_session_user' => $app_session_user
+		));	
+	}
+	elseif ($app_session_user != null & !empty($_POST)) {
+		
+		$articleUpdate = $articleController->updateArticle($idArticle, $_POST, $app_session_user);
+var_dump($articleUpdate);
+		$slug = $articleUpdate->get_sSlug();
+		header("Location: article/view/$slug");
+	}
+}
+elseif ($page == 'admin' & ($action == 'activationArticle' || $action == 'inactivationArticle') & $data != null) {
+		if ($app_session_user['role'] != 1) {
+			trigger_error("Vous devez être administrateur.");
+		}
+		$idArticle = (int)$data;
+		if ($action == 'inactivationArticle' & $app_session_user['role'] == 1) {
+			$articleController->activationArticle($idArticle, $app_session_user, 'inactivation');
+			$flashMessage = "L'article a bien été désactivé.";
+			$flashName = "success";
+		}
+		if ($action == 'activationArticle' & $app_session_user['role'] == 1) {
+			$articleController->activationArticle($idArticle, $app_session_user, 'activation');
+			$flashMessage = "L'article a bien été activé.";
+			$flashName = "success";
+		}
+		
+		$listUsers = $userController->queryAllUser();
+		$listArticles = $articleController->indexAction('DESC', 100);
+
+		$template = $twig->load('admin/manager.html.twig');
+		echo $template->render(array(
+			'listArticles' => $listArticles,
+			'listUsers' => $listUsers,
+			'app_session_user' => $app_session_user,
+			'flashMessage' => $flashMessage,
+			'flashName' => $flashName,
+			'activeMenu' => 'tabArticle'
 		));
 }
 elseif ($page == 'admin' & $action == null) {
@@ -144,12 +220,13 @@ elseif ($page == 'admin' & $action == null) {
 		echo $template->render(array(
 			'listArticles' => $listArticles,
 			'listUsers' => $listUsers,
-			'app_session_user' => $app_session_user
+			'app_session_user' => $app_session_user,
+			'activeMenu' => 'tabUser'
 		));
 }
 elseif ($page == 'article' & $action == 'view' & $data != null) {
 
-	$article = $articleController->viewArticleAction($data);
+	$article = $articleController->getArticleAction($data);
 
 	$template = $twig->load('core/article.html.twig');
 	echo $template->render(array(
@@ -159,7 +236,7 @@ elseif ($page == 'article' & $action == 'view' & $data != null) {
 }
 elseif ($page == 'article' & $action == 'add') {
 
-	if (!empty($_SESSION['user']) & empty($_POST['formArticle'])) {
+	if ($app_session_user != null & empty($_POST['formArticle'])) {
 		$listCategories = $articleController->findCategorieArticleAction();
 
 		$template = $twig->load('core/add_article.html.twig');
@@ -168,7 +245,7 @@ elseif ($page == 'article' & $action == 'add') {
 			'app_session_user' => $app_session_user
 		));
 	}
-	elseif (!empty($_SESSION['user']) & !empty($_POST['formArticle'])) {
+	elseif ($app_session_user != null & !empty($_POST['formArticle'])) {
 		
 		$newArticle = $articleController->addArticleAction($_POST,$_SESSION);
 
@@ -186,8 +263,8 @@ elseif ($page == 'article' & $action == 'add') {
 			));
 		}else{
 			//Affichage de l'article via son Slug
-			$data = $newArticle->get_sSlug();
-			header("Location: article/view/$data");
+			$slug = $newArticle->get_sSlug();
+			header("Location: article/view/$slug");
 		}
 
 	}
@@ -203,7 +280,8 @@ elseif ($page == 'article' & $action == 'add') {
 			'app_session_user' => $app_session_user
 		));
 	}
-}// Recherche via les liens catégories
+}
+// Recherche via les liens catégories
 elseif ($page == 'search' & !empty($_GET['action']) & empty($_POST)) {
 
 	$keyWordSearch = $_GET['action'];

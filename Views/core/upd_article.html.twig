@@ -1,0 +1,67 @@
+{% extends "layout.html.twig" %}
+{% set active = 'updArticle' %}
+
+
+{% block title %}Modifier un Article{% endblock %}
+
+{% block body %}
+
+{% if flashMessage is defined %}
+    <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
+    <hr>
+{% endif %}
+
+
+{% set valuesCategories = [] %}
+
+    <form method="post" action="?page=admin&action=updArticle&data={{datasForm._id}}">
+		<input type="text" name="_sTitre" placeholder="Ajouter un titre" required="required" value="{% if datasForm %}{{datasForm._sTitre}}{% endif %}"><br>
+		<textarea name="_sContenu" placeholder="Ajouter un contenu" rows="20px" cols="50px" required="required">{% if datasForm %}{{datasForm._sContenu}}{% endif %}</textarea> <br>
+		<div id="checkboxCategorie">
+			{% for categorie in listCategories %}
+				{% for datasFormCategorie in datasForm._aCategories %}
+					{% if categorie._id in datasFormCategorie._id %}
+						{% set valuesCategories = valuesCategories|merge([categorie._id]) %}
+						<div class="checkboxChoice">
+			    			<input type="checkbox" {{"checked='checked'"}} id="categorie" name="categorie_{{categorie._id}}" value="{{categorie._id}}">
+			    			<label for="categorie">{{categorie._sNom}}</label>
+			    			<a href="#" data-toggle="popover" data-content="{{categorie._sResume}}">
+			    				<span class="categorie" style="color:{{categorie._sCodeHexa}}"> 
+			    					<i class="glyphicon glyphicon-info-sign resumeCategorie"></i>
+			    				</span>
+			    			</a>
+						</div>
+					{% endif %}
+				{% endfor %}	    
+			{% endfor %}
+
+			{% set tabRealCategories = [] %}	 
+			{% for categorie in listCategories %}
+				{% for datasFormCategorie in datasForm._aCategories %}
+					{% if not (categorie._id in valuesCategories) %}
+					{% if categorie._id not in tabRealCategories %}
+						{% set tabRealCategories = tabRealCategories|merge([categorie._id]) %}
+						<div class="checkboxChoice">
+			    			<input type="checkbox" id="categorie" name="categorie_{{categorie._id}}" value="{{categorie._id}}">
+			    			<label for="categorie">{{categorie._sNom}}</label>
+			    			<a href="#" data-toggle="popover" data-content="{{categorie._sResume}}">
+			    				<span class="categorie" style="color:{{categorie._sCodeHexa}}"> 
+			    					<i class="glyphicon glyphicon-info-sign resumeCategorie"></i>
+			    				</span>
+			    			</a>
+						</div>
+
+
+					{% endif %}
+						
+
+					{% endif %}
+				{% endfor %}	    
+			{% endfor %}
+
+		</div>
+		<input type="submit" class="btn btn-success" name="formArticle" value="Modifier l'article">
+	</form>
+
+
+{% endblock %}

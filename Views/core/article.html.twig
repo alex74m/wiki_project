@@ -3,9 +3,8 @@
 {% block title %}{{ article._sTitre }}{% endblock %}
 
 {% block body %}
-{% for item in article %}
-    {{dump(item)}}
-{% endfor %}
+{% if article._bActif == 1 %}
+
     <div class="row">
                 <h2>{{ article._sTitre }}</h2> <cite>Par : {{ article._iAuteurId._sNom }} le : {{article._dDateAjout|date("d/m/Y à h:m:s")}} </cite> 
                 <br>
@@ -21,5 +20,9 @@
                 </div>    
         </div> 
     </div>
+
+{% else %}
+    Cette article n'est pas encore validé. Un peu de patience.
+{% endif %}
 
 {% endblock %}
