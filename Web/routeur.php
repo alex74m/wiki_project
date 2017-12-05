@@ -1,81 +1,4 @@
 <?php
-/*
-use \Web\ControllerGeneral;
-
-class Router
-{
-
-	private $page;
-	private $action;
-	private $data;
-	private $post;
-	private $app_session_user;
-	private $manager;
-	private $route;
-
-	public function __construct($get = null, $post = null, $session = null)
-	{
-		$this->setController($get['page']);
-		$this->setAction($get['action']);
-		$this->setData($get['data']);
-		$this->setPost($post);
-		$this->setSession($session);
-		$this->manager = new ControllerGeneral();
-	}
-	public static function setRoute()
-	{
-
-		switch ($this->page) {
-			case 'home':
-					return $this->manager->;
-				break;
-			
-			default:
-				# code...
-				break;
-		}
-	}
-
-	public function setPost($post)
-	{
-		if (!empty($post)) 
-			$this->post = $post;
-		else
-			$this->post = null;
-	}
-
-	public function setController($get){
-		if (isset($get['page'])) 
-			$this->page = htmlentities($get['page']);
-		else
-			$this->page = 'home';
-
-	}
-	public function setAction($get){
-
-		if (isset($get['action'])) 
-			$this->action = htmlentities($get['action']);
-		else
-			$this->action = null;
-	}
-	public function setData($get){
-
-		if (isset($get['data'])) 
-			$this->data = htmlentities($get['data']);
-		else
-			$this->data = null;
-
-	}
-	public function setSession($session){
-
-		if (isset($session['user'])) 
-			$this->app_session_user = $session['user'];
-		else
-			$this->app_session_user = null;
-	}
-
-}
-*/
 
 /*-------------REQUEST---------------------------*/
 if (isset($_GET['page'])) 
@@ -198,10 +121,12 @@ elseif ($page == 'admin' & ($action == 'inactivationUser' || $action == 'activat
 		}
 		
 		$listUsers = $userController->queryAllUser();
+		$listCategories = $articleController->findCategorieArticleAction();
 		$listArticles = $articleController->indexAction('DESC', 100);
 
 		$template = $twig->load('admin/manager.html.twig');
 		echo $template->render(array(
+			'listCategories' => $listCategories,
 			'listArticles' => $listArticles,
 			'listUsers' => $listUsers,
 			'app_session_user' => $app_session_user,
@@ -211,32 +136,38 @@ elseif ($page == 'admin' & ($action == 'inactivationUser' || $action == 'activat
 		));
 }
 elseif ($page == 'admin' & $action == 'delArticle' & $data != null) {
-	$idArticle = (int) $data;
-	$delArticle = $articleController->deleteArticle($idArticle, $app_session_user);
+		
+		$idArticle = (int) $data;
+		$delArticle = $articleController->deleteArticle($idArticle, $app_session_user);
 
-	if ($delArticle == true) {
-		header("Location: admin");
-	}
-	elseif ($delArticle == false) {
-		$flashMessage = '.....';
-		$flashName = 'danger';
-		$listArticles = $articleController->indexAction('DESC', 30);
-		$template = $twig->load('core/index.html.twig');
+		if ($delArticle == false) {
+			$flashMessage = "Cette article n'a pas pu être supprimé.";
+			$flashName = "danger";
+		}
+		if ($delArticle == true) {
+			$flashMessage = "L'article a bien été supprimé.";
+			$flashName = "success";
+		}
+
+		$listUsers = $userController->queryAllUser();
+		$listCategories = $articleController->findCategorieArticleAction();
+		$listArticles = $articleController->indexAction('DESC', 100);
+
+		$template = $twig->load('admin/manager.html.twig');
 		echo $template->render(array(
+			'listCategories' => $listCategories,
 			'listArticles' => $listArticles,
+			'listUsers' => $listUsers,
+			'app_session_user' => $app_session_user,
 			'flashMessage' => $flashMessage,
 			'flashName' => $flashName,
-			'activeMenu' => 'tabArticle',
-			'app_session_user' => $app_session_user
+			'activeMenu' => 'tabUser'
 		));
-	}else{
-		header("Location: /admin");		
-	}
 }
 elseif ($page == 'admin' & $action == 'updArticle' & $data != null) {
 
 	$idArticle = $data;
-	$article = $articleController->getArticleAction($idArticle, $app_session_user);
+	$article = $articleController->getArticleActionById($idArticle, $app_session_user);
 
 	if ($app_session_user != null & empty($_POST)) {
 		$listCategories = $articleController->findCategorieArticleAction();
@@ -271,9 +202,11 @@ elseif ($page == 'admin' & ($action == 'activationArticle' || $action == 'inacti
 		
 		$listUsers = $userController->queryAllUser();
 		$listArticles = $articleController->indexAction('DESC', 100);
+		$listCategories = $articleController->findCategorieArticleAction();
 
 		$template = $twig->load('admin/manager.html.twig');
 		echo $template->render(array(
+			'listCategories' => $listCategories,
 			'listArticles' => $listArticles,
 			'listUsers' => $listUsers,
 			'app_session_user' => $app_session_user,
@@ -313,7 +246,20 @@ elseif ($page == 'admin' & $action == 'addCategorie' & $data == null) {
 		if ($newCategorie === true) {
 			header("Location: admin");
 		}else{
-			header("Location: home");
+			$listArticles = $articleController->indexAction('DESC', 100);
+			$listCategories = $categorieController->getAllCategories();
+			$listUsers = $userController->queryAllUser();
+
+			$template = $twig->load('admin/manager.html.twig');
+			echo $template->render(array(
+				'listArticles' => $listArticles,
+				'listCategories' => $listCategories,
+				'listUsers' => $listUsers,
+				'app_session_user' => $app_session_user,
+				'activeMenu' => 'tabAddCategorie',
+				'flashMessage' => "Veuillez réessayer svp",
+				'flashName' => "danger"
+			));
 		}
 
 	}
@@ -342,7 +288,7 @@ elseif ($page == 'article' & $action == 'view' & $data != null) {
 }
 elseif ($page == 'article' & $action == 'addArticle') {
 
-	if ($app_session_user != null & empty($_POST['formArticle'])) {
+	if ($app_session_user != null & empty($_POST)) {
 		$listCategories = $articleController->findCategorieArticleAction();
 
 		$template = $twig->load('core/add_article.html.twig');
@@ -351,8 +297,8 @@ elseif ($page == 'article' & $action == 'addArticle') {
 			'app_session_user' => $app_session_user
 		));
 	}
-	elseif ($app_session_user != null & !empty($_POST['formArticle'])) {
-		
+	elseif ($app_session_user != null & !empty($_POST)) {
+	
 		$newArticle = $articleController->addArticleAction($_POST,$app_session_user);
 
 		if ($newArticle === false) {

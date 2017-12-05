@@ -20,7 +20,7 @@ class CategorieForm
 			'type' => 'text', 'lengthMin' => 2, 'lengthMax' => 50, 'required' => true
 		));
 		$this->tabFieldValidator[] = $this->formValidator->validFormType($datasForm['_sResume'], array(
-			'type' => 'text', 'lengthMin' => 10, 'lengthMax' => 200, 'required' => true
+			'type' => 'text', 'lengthMin' => 5, 'lengthMax' => 200, 'required' => true
 		));
 		$this->tabFieldValidator[] = $this->formValidator->validFormType($datasForm['_sCodeHexa'], array(
 			'type' => 'color', 'required' => true

@@ -65,12 +65,6 @@ class ArticleController implements InterfaceController
 	 */
 	public function getArticleAction($slug, $user = null)
 	{
-		/*
-			$articleQuery = $this->getDbRequest()->findOneByData("
-			SELECT * FROM article 
-			LEFT JOIN user ON article.usr_id=user.usr_id 
-			WHERE article.art_sSlug=:data",$slug);
-		*/
 
 		$articleQuery = $this->getDbRequest()->queryOneByOneField("
 			SELECT * FROM article 
@@ -84,6 +78,27 @@ class ArticleController implements InterfaceController
 			$article = null;
 
 		return $article;
+	}
+	/**
+	 * Get entity Article App\Model\Article
+	 * return Article Object
+	 * @param int $id 
+	 */
+	public function getArticleActionById($idArticle, $user = null)
+	{
+		$articleQuery = $this->getDbRequest()->queryOneByOneField("
+			SELECT * FROM article 
+			LEFT JOIN user ON article.usr_id=user.usr_id 
+			WHERE article.art_id=:field",$idArticle, 'int', 'object'
+		);
+
+		if(!empty($articleQuery))
+			$article = $this->entityBuilder($articleQuery);
+		else
+			$article = null;
+
+		return $article;
+		var_dump($article);
 	}
 
 	/**
@@ -107,7 +122,7 @@ class ArticleController implements InterfaceController
 		if ($isValid === true)
 		{
 			// Create new pre-User object
-			$userId = $user['user']['id'];
+			$userId = $user['id'];
 			$user = new User();
 			$user->set_id($userId);
 
@@ -196,6 +211,7 @@ class ArticleController implements InterfaceController
 		$isValid = $articleUpdForm->builderFormValidator($post);
 		if ($isValid === true)
 		{
+
 			// Create new pre-User object
 			$userId = $user['id'];
 			$user = new User();

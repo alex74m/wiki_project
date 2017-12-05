@@ -1,14 +1,14 @@
 
     <form method="post" action="?page=admin&action=addCategorie">
-    	<label id="nom">Nom de la nouvelle catégorie</label><br>
+    	<label id="nom">Nom de la nouvelle catégorie (min 2 caractères)</label><br>
     	<input type="text" id="nom" name="_sNom" placeholder="Nom de la catégorie" required="required" /><br>
-    	<label id="resume">Un résumé succinct de la catégorie</label><br>
+    	<label id="resume">Un résumé succinct de la catégorie (entre 5 et 200 caractères)</label><br>
     	<textarea id="resume" name="_sResume" required="required" placeholder="Description courte"></textarea><br>
 		<label id="activeCat" >Voulez-vous rendre cette catégorie active ?</label><br>
 		Valide :<input type="radio" id="activeCat" name="_bActif" checked="checked"value="1"  /><br>
 		Inactif : <input type="radio" id="activeCat" name="_bActif" value="0" /><br>
 		<label id="colorCat">Sélectionner la couleur de cette catégorie</label><br>
-		<input type="color" id="colorCat" name="_sCodeHexa"/><br>
+		<input type="color" id="colorCat" name="_sCodeHexa" value="#ff0000"/><br>
 		<hr>
 		<input type="submit" class="btn btn-success" name="formCategorie" value="Ajouter une catégorie">
 	</form>

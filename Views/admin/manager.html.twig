@@ -69,7 +69,7 @@
                                 <a href="#tab4default" data-toggle="tab">Ajouter des catégories</a>
                             </li>
                             <li>
-                                <a href="#tab5default" data-toggle="tab">Voir les catégories</a>
+                                <a href="#tabAddCategorie" data-toggle="tab">Voir les catégories</a>
                             </li>
                             <li class="dropdown">
                                 <a href="#" data-toggle="dropdown">Mon compte <span class="caret"></span></a>
@@ -149,7 +149,7 @@
 
                                    <tr>
                                     <td>
-                                        <a href="admin/updArticle/{{article._sSlug}}" class="btn btn-info">
+                                        <a href="admin/updArticle/{{article._id}}" class="btn btn-info">
                                             <span class="glyphicon glyphicon-refresh"></span> Modifier
                                         </a>
                                     </td>
@@ -251,7 +251,7 @@
                             {% include 'admin/form_catagorie.html.twig'%}
 
                         </div>
-                        <div class="tab-pane fade" id="tab5default">
+                        <div class="tab-pane fade {% if activeMenu == 'tabAddCategorie' %}{{'active'}}{% endif %}" id="tabAddCategorie">
 
                             <div class="table-responsive">          
                               <table class="table">
@@ -301,8 +301,6 @@
                                 </tbody>
                               </table>
                               </div>
-
-                         
                         </div>
                         <div class="tab-pane fade" id="tab6default">A coder</div>
                 </div>
