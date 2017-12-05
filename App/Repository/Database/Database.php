@@ -13,6 +13,7 @@ use \PDO;
 class Database
 {
 	private static $db;
+	private const TYPE = 'mysql';
 	private const HOST = 'host';
 	private const DBNAME = 'wiki';
 	private const ID = 'root';
@@ -20,7 +21,7 @@ class Database
 
 	private function __construct()
 	{
-		self::$db = new PDO("mysql:localhost=".self::HOST.";dbname=".self::DBNAME."","".self::ID."","".self::PASS."",[PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);
+		self::$db = new PDO("".self::TYPE.":localhost=".self::HOST.";dbname=".self::DBNAME."","".self::ID."","".self::PASS."",[PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);
 	}
 
 	public static function getInstance()

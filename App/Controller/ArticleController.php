@@ -14,6 +14,7 @@ use \App\Form\ArticleForm;
 
 /**
  * @ArticleController
+ * Entity : Article
  */
 class ArticleController implements InterfaceController
 {
@@ -43,7 +44,7 @@ class ArticleController implements InterfaceController
 	 * @param null|int $limit The number of Article in loop
 	 */
 	public function indexAction($order = 'DESC', $limit = null)
-	{
+	{	
 		$articlesQuery = $this->getDbRequest()->queryAll("
 			SELECT * FROM article 
 			LEFT JOIN user ON article.usr_id=user.usr_id
@@ -95,7 +96,6 @@ class ArticleController implements InterfaceController
 	{
 		if (empty($user)) {
 			trigger_error("Merci de vous connecter pour accéder à ce service.");
-			//trigger_error("Merci de vous connecter pour accéder à ce service.");
 			return false;
 		}
 
@@ -393,16 +393,17 @@ class ArticleController implements InterfaceController
 	 * @param null|string $keyWord A string with keyWord name by GET method
 	 * @param null|int $limit The number of Article in loop
 	 */
-	public function searchArticlesByCategorie($keyWord=null, $limit = null)
+	public function searchArticlesByCategorie($keyWord = null, $limit = null)
 	{
 
 		$articlesQuery = $this->getDbRequest()->queryAllBySearch("
-			SELECT DISTINCT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_sToken,user.usr_bAdmin, user.usr_bActif,user.usr_sAvatar 
+			SELECT DISTINCT article.art_id,article.usr_id,article.art_sTitre,article.art_sContenu,article.art_dDateCreation,article.art_dDateLastModif,article.art_bActif,article.art_sSlug, user.usr_id,user.usr_sNom,user.usr_sPrenom,user.usr_sMail,user.usr_sToken,user.usr_bAdmin, user.usr_bActif,user.usr_sAvatar, categorie.cat_sNom
 			FROM article 
-			LEFT JOIN user ON article.usr_id=user.usr_id 
-			LEFT JOIN join_article_categorie ON join_article_categorie.art_id=article.art_id 
-			LEFT JOIN categorie ON categorie.cat_id=join_article_categorie.cat_id 
-			LIKE categorie.cat_sNom=:keyWord
+			INNER JOIN user ON article.usr_id=user.usr_id 
+			INNER JOIN join_article_categorie ON join_article_categorie.art_id=article.art_id 
+			INNER JOIN categorie ON categorie.cat_id=join_article_categorie.cat_id 
+			WHERE categorie.cat_sNom LIKE :keyWord
+			ORDER BY article.art_dDateCreation
 			LIMIT $limit
 			", $keyWord);
 

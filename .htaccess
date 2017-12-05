@@ -1,16 +1,14 @@
 Options +FollowSymlinks
 RewriteEngine On
+RewriteBase /www/wiki_project/
+RewriteRule ^([0-9a-zA-Z\-]+)$  index.php?page=$1 [L]
+RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  index.php?page=$1&action=$2 [L]
+RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  index.php?page=$1&action=$2&data=$3 [L]
 
 
 
-RewriteRule ^([0-9a-zA-Z\-]+)$  http://localhost/www/wiki_project/index.php?page=$1 
-RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  http://localhost/www/wiki_project/index.php?page=$1&action=$2 
-RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  http://localhost/www/wiki_project/index.php?page=$1&action=$2&data=$3 [L]
-
-#RewriteBase /www/wiki_project/
-#RewriteRule ^([0-9a-zA-Z\-]+)$  index.php?page=$1 [L]
-#RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  index.php?page=$1&action=$2 [L]
-#RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  index.php?page=$1&action=$2&data=$3 [L]
-
-
+#----------------------------------------------------------------------------------------
+#RewriteRule ^([0-9a-zA-Z\-]+)$  http://localhost/www/wiki_project/index.php?page=$1 [L]
+#RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  http://localhost/www/wiki_project/index.php?page=$1&action=$2 [L]
+#RewriteRule ^([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)/([0-9a-zA-Z\-]+)$  http://localhost/www/wiki_project/index.php?page=$1&action=$2&data=$3 [L]
 # RewriteRule ^(.*)/css/(.*)$ css/$2 [L]

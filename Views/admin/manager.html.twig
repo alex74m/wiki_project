@@ -38,23 +38,21 @@
     {% endif %}
 {% endfor %}
 
-
 {% block title %}Administration{% endblock %}
 
 {% block body %}
-
-
-
 
     {% if app_session_user is not null %}
         {% if app_session_user.role == 1 %}
  
             <h1>Espace d'administration</h1>
-            <p>
-                {% if flashMessage is defined %}
+           
+            {% if flashMessage is defined %}
+                 <p>
                     <span class="alert alert-{{flashName}}">{{flashMessage}}</span>
-                {% endif %}
-            </p>
+                </p>
+           {% endif %}
+
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
                         <ul class="nav nav-tabs">
@@ -67,12 +65,16 @@
                             </li>
                             <li><a href="#tab3default" data-toggle="tab">Articles à valider {% if nbArticleNotRead is defined %}<span class="alert alert-warning">{{nbArticleNotRead|length}} </span>{% endif %}</a>
                             </li>
-                            <li><a href="#tab4default" data-toggle="tab">Ajouter des catégories</a>
+                            <li>
+                                <a href="#tab4default" data-toggle="tab">Ajouter des catégories</a>
+                            </li>
+                            <li>
+                                <a href="#tab5default" data-toggle="tab">Voir les catégories</a>
                             </li>
                             <li class="dropdown">
                                 <a href="#" data-toggle="dropdown">Mon compte <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#tab5default" data-toggle="tab">Mes infomations</a>
+                                    <li><a href="#tab6default" data-toggle="tab">Mes infomations</a>
                                     </li>
                                 </ul>
                             </li>
@@ -94,7 +96,6 @@
                                     <th>Firstname</th>
                                     <th>Lastname</th>
                                     <th>Email</th>
-                                    <th>Token</th>
                                     <th>Actif</th>
                                     <th>Avatar</th>
                                   </tr>
@@ -113,9 +114,7 @@
                                     <td>{{user._sNom}}</td>
                                     <td>{{user._sPrenom}}</td>
                                     <td>{{user._sMail}}</td>
-                                    <td>{{user._sToken}}</td>
-                                    <td>{{user._bActif}}</td>
-                                    
+                                    <td>{{user._bActif}}</td>                            
                                     <td>{{user._bAvatar}}</td>
                                   </tr>
                             {% endfor %}                                    
@@ -247,8 +246,65 @@
 
 
                         </div>
-                        <div class="tab-pane fade" id="tab4default">A coder</div>
-                        <div class="tab-pane fade" id="tab5default">A coder</div>
+                        <div class="tab-pane fade" id="tab4default">
+
+                            {% include 'admin/form_catagorie.html.twig'%}
+
+                        </div>
+                        <div class="tab-pane fade" id="tab5default">
+
+                            <div class="table-responsive">          
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th>Modifier</th>
+                                    <th>Supprimer</th>
+                                    <th>Désactiver</th>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Resumé</th>
+                                    <th>Actif</th>
+                                    <th>Slug</th>
+                                    <th>Couleur</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                            {% for categorie in listCategories %}
+                                   <tr>
+                                    <td>
+                                        <a href="admin/updCategorie/{{categorie._sSlug}}" class="btn btn-info" disabled="disabled">
+                                            <span class="glyphicon glyphicon-refresh"></span> Modifier
+                                        </a>
+                                    </td>
+                                    </td>
+                                        <td>
+                                            <a href="admin/delCategorie/{{categorie._id}}" class="btn btn-info" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette categorie ?')" disabled="disabled">
+                                                <span class="glyphicon glyphicon-trash"></span> Supprimer
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="admin/{% if categorie._bActif == 1 %}{{'inactivationCategorie'}}{%else%}{{'activationCategorie'}}{% endif %}/{{categorie._id}}" class="btn btn-danger"  onclick="return confirm('Êtes-vous sûr de votre choix ?')" disabled="disabled">
+                                                <span class="glyphicon glyphicon-floppy-remove"></span>
+                                                Désactiver
+                                            </a>
+                                        </td>
+                                        <td>{{categorie._id}}</td>
+                                        <td><a href="categorie/view/{{categorie._sSlug}}">{{categorie._sNom}}</a></td>
+                                        <td>{{categorie._sResume}}</td>
+
+                                        <td>{{categorie._bActif}}</td>
+                                        <td>{{categorie._sSlug}}</td>            
+                                        <td style="color:{{categorie._sCodeHexa}}">{{categorie._sCodeHexa}}</td>
+                                      </tr>
+                                {% endfor %}                                    
+       
+                                </tbody>
+                              </table>
+                              </div>
+
+                         
+                        </div>
+                        <div class="tab-pane fade" id="tab6default">A coder</div>
                 </div>
             </div>
         </div>

@@ -15,6 +15,7 @@ use \App\Repository\DbRequest;
 
 // Appel des contrôleurs
 use \App\Controller\ArticleController;
+use \App\Controller\CategorieController;
 use \App\Controller\UserController;
 
 
@@ -28,6 +29,7 @@ $dbRequest = new DbRequest($instanceDb);
 
 // CONTROLEURS
 $articleController = new ArticleController($dbRequest);
+$categorieController = new CategorieController($dbRequest);
 $userController = new UserController($dbRequest);
 
 

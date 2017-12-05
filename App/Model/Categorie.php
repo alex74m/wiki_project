@@ -21,6 +21,7 @@ class Categorie
 
 	public function set_id($id)
 	{
+		$id = (int) $id;
 		$this->id = $id;
 	}
 	public function set_sNom($sNom)

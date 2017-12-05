@@ -1,26 +1,103 @@
 <?php
+/*
+use \Web\ControllerGeneral;
+
+class Router
+{
+
+	private $page;
+	private $action;
+	private $data;
+	private $post;
+	private $app_session_user;
+	private $manager;
+	private $route;
+
+	public function __construct($get = null, $post = null, $session = null)
+	{
+		$this->setController($get['page']);
+		$this->setAction($get['action']);
+		$this->setData($get['data']);
+		$this->setPost($post);
+		$this->setSession($session);
+		$this->manager = new ControllerGeneral();
+	}
+	public static function setRoute()
+	{
+
+		switch ($this->page) {
+			case 'home':
+					return $this->manager->;
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+	}
+
+	public function setPost($post)
+	{
+		if (!empty($post)) 
+			$this->post = $post;
+		else
+			$this->post = null;
+	}
+
+	public function setController($get){
+		if (isset($get['page'])) 
+			$this->page = htmlentities($get['page']);
+		else
+			$this->page = 'home';
+
+	}
+	public function setAction($get){
+
+		if (isset($get['action'])) 
+			$this->action = htmlentities($get['action']);
+		else
+			$this->action = null;
+	}
+	public function setData($get){
+
+		if (isset($get['data'])) 
+			$this->data = htmlentities($get['data']);
+		else
+			$this->data = null;
+
+	}
+	public function setSession($session){
+
+		if (isset($session['user'])) 
+			$this->app_session_user = $session['user'];
+		else
+			$this->app_session_user = null;
+	}
+
+}
+*/
 
 /*-------------REQUEST---------------------------*/
-if (isset($_GET['page'])) {
+if (isset($_GET['page'])) 
 	$page = htmlentities($_GET['page']);
-}else{
+else
 	$page = 'home';
-}
-if (isset($_GET['action'])) {
+
+if (isset($_GET['action'])) 
 	$action = htmlentities($_GET['action']);
-}else{
+else
 	$action = null;
-}
-if (isset($_GET['data'])) {
+
+if (isset($_GET['data'])) 
 	$data = htmlentities($_GET['data']);
-}else{
+else
 	$data = null;
-}
-if (isset($_SESSION['user'])) {
+
+if (isset($_SESSION['user'])) 
 	$app_session_user = $_SESSION['user'];
-}else{
+else
 	$app_session_user = null;
-}
+
 
 /*--------------RESPONSE---------------------------*/
 
@@ -153,7 +230,7 @@ elseif ($page == 'admin' & $action == 'delArticle' & $data != null) {
 			'app_session_user' => $app_session_user
 		));
 	}else{
-		header("Location: admin");		
+		header("Location: /admin");		
 	}
 }
 elseif ($page == 'admin' & $action == 'updArticle' & $data != null) {
@@ -205,22 +282,53 @@ elseif ($page == 'admin' & ($action == 'activationArticle' || $action == 'inacti
 			'activeMenu' => 'tabArticle'
 		));
 }
-elseif ($page == 'admin' & $action == null) {
+elseif ($page == 'admin' & $action == null & $data == null) {
 
 		if ($app_session_user['role'] != 1) {
 			trigger_error("Vous devez être administrateur.");
 		}
 
-		$listUsers = $userController->queryAllUser();
 		$listArticles = $articleController->indexAction('DESC', 100);
+		$listCategories = $categorieController->getAllCategories();
+		$listUsers = $userController->queryAllUser();
 
 		$template = $twig->load('admin/manager.html.twig');
 		echo $template->render(array(
 			'listArticles' => $listArticles,
+			'listCategories' => $listCategories,
 			'listUsers' => $listUsers,
 			'app_session_user' => $app_session_user,
 			'activeMenu' => 'tabUser'
 		));
+}
+elseif ($page == 'admin' & $action == 'addCategorie' & $data == null) {
+
+	if ($app_session_user != null & empty($_POST)) {
+		header('Location: admin');
+	}
+	elseif ($app_session_user != null & !empty($_POST)) {
+		
+		$newCategorie = $categorieController->addCategorie($_POST,$app_session_user);
+
+		if ($newCategorie === true) {
+			header("Location: admin");
+		}else{
+			header("Location: home");
+		}
+
+	}
+	else{
+		$flashMessage = 'Vous devez être connecté pour ajouter un article.';
+		$flashName = 'danger';
+		$listArticles = $articleController->indexAction('DESC', 30);
+		$template = $twig->load('core/index.html.twig');
+		echo $template->render(array(
+			'listArticles' => $listArticles,
+			'flashMessage' => $flashMessage,
+			'flashName' => $flashName,
+			'app_session_user' => $app_session_user
+		));
+	}
 }
 elseif ($page == 'article' & $action == 'view' & $data != null) {
 
@@ -232,7 +340,7 @@ elseif ($page == 'article' & $action == 'view' & $data != null) {
 		'app_session_user' => $app_session_user
 	));
 }
-elseif ($page == 'article' & $action == 'add') {
+elseif ($page == 'article' & $action == 'addArticle') {
 
 	if ($app_session_user != null & empty($_POST['formArticle'])) {
 		$listCategories = $articleController->findCategorieArticleAction();
@@ -245,7 +353,7 @@ elseif ($page == 'article' & $action == 'add') {
 	}
 	elseif ($app_session_user != null & !empty($_POST['formArticle'])) {
 		
-		$newArticle = $articleController->addArticleAction($_POST,$_SESSION);
+		$newArticle = $articleController->addArticleAction($_POST,$app_session_user);
 
 		if ($newArticle === false) {
 			$flashMessage = 'Nous avons rencontré un problème. Veuillez réessayer svp.';
@@ -317,7 +425,7 @@ elseif ($page == 'search' & empty($_GET['search']) & isset($_POST)) {
 
 	}else{
 		$template = $twig->load('core/search.html.twig');
-		echo $template->render(array('app_session_user' => $app_session_user,));		
+		echo $template->render(array('app_session_user' => $app_session_user));		
 	}
 }
 elseif ($page == 'logout') {
@@ -329,7 +437,7 @@ elseif ($page == 'logout') {
 }
 else{
 	$template = $twig->load('error/error404.html.twig');
-	echo $template->render(array('app_session_user' => $app_session_user,));
+	echo $template->render(array('app_session_user' => $app_session_user));
 }
 
 ?>

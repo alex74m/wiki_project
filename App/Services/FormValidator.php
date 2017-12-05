@@ -10,11 +10,10 @@ class FormValidator
 	{
 		$this->validField = $this->getValidation($field, $verification);
 		
-		if (in_array(false, $this->validField)) {
+		if (in_array(false, $this->validField))
 			return false;
-		}
-
-		return true;
+		else
+			return true;
 	}
 
 	public function getValidation($field, $verification = array())
@@ -98,6 +97,14 @@ class FormValidator
 			}
 			else{
 				return true;
+			}
+		}
+		elseif ($control == 'color') {
+			if (preg_match("#^\#(?:(?:[a-f\d]{3}){1,2})$#i",$field)){
+				return true;
+			}else{
+				trigger_error("La couleur doit être au format #hexa.");
+				return false;
 			}
 		}
 		else {

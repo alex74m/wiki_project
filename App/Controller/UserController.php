@@ -12,7 +12,10 @@ use \App\Services\Token;
 
 use \App\Form\UserForm;
 
-
+/**
+ * @UserController
+ * Entity : User
+ */
 class UserController implements InterfaceController
 {
 	private $repository;

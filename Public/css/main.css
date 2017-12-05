@@ -1,8 +1,11 @@
     body{
       margin-top: 70px;
+      background-image: url('../images/font.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
     }
     .navbar-fixed-top{
-      background-color: white !important;
+      background-color: lightblue !important;
     }
     ul.navbar-nav li a,
     a.navbar-brand{

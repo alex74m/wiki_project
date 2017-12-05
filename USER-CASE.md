@@ -1,14 +1,15 @@
 ----------------------------------
 A FAIRE
-
 - créer une classe de routage
-- reprendre les duplication de codes (faire une séparation manager/contrôleurs)
+- reprendre les duplications de codes (faire une séparation manager/contrôleurs)
 - AJOUTER TOKEN DANS LES FORMULAIRES
-
-
+- Reprendre les URL Rewriting y compris css/js/images (prendre le Asset component de Symfony)
+- Créer un service 'Paginateur'
+- Ajouter les metas description et content
 ----------------------------------
 EN COURS
-
+- ajouter des catégories
+- modifier des catégories
 
 
 ----------------------------------
