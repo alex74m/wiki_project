@@ -2,7 +2,7 @@
 Aries_PHP-Project_2017
 
 # Accès espace administrateur
-Espace admin : ok@yah.fr
+Espace admin : ok[at]yah.fr
 Password : alex
 
 # UrlRewriting
