@@ -7,4 +7,4 @@ Password : alex
 
 # UrlRewriting
 Modifier selon le cas la 'RewriteBase' dans le .htaccess
-! insertion dans le layout de la balise <base href=""> /Wiews/layout.html.twig
+! insertion dans le layout de la balise < base href="" > /Wiews/layout.html.twig
